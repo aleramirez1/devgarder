@@ -1,0 +1,45 @@
+{
+  "name": "code-garden",
+  "displayName": "🌿 Code Garden",
+  "description": "Tu planta secreta que crece mientras programas",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "code-garden.showPlant",
+        "title": "🌿 Ver mi Planta"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "code-garden",
+          "title": "Code Garden",
+          "icon": "$(symbol-color)"
+        }
+      ]
+    },
+    "views": {
+      "code-garden": [
+        {
+          "id": "plantView",
+          "name": "Mi Planta",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  }
+}

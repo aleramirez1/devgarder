@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Garden</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #2d2d2d;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .pot-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .plant-area {
+            position: relative;
+            width: 150px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .plant-svg {
+            position: absolute;
+            bottom: 105px;
+            width: 100%;
+            height: 150px;
+        }
+        
+        .pot {
+            position: relative;
+            width: 150px;
+            height: 105px;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    #8B4513 0px,
+                    #A0522D 2px,
+                    #8B4513 4px
+                ),
+                linear-gradient(to bottom, #A0522D 0%, #6B3410 50%, #4A2508 100%);
+            border-radius: 0 0 30px 30px;
+            box-shadow: 
+                inset -3px 0 8px rgba(0,0,0,0.4),
+                inset 3px 0 8px rgba(139, 69, 19, 0.3),
+                inset 0 -10px 20px rgba(0,0,0,0.5),
+                0 10px 30px rgba(0,0,0,0.6);
+        }
+        
+        .pot::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            height: 20px;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    #A0522D 0px,
+                    #C87533 2px,
+                    #A0522D 4px
+                ),
+                linear-gradient(to bottom, #D2691E 0%, #A0522D 50%, #8B4513 100%);
+            border-radius: 15px 15px 0 0;
+            box-shadow: 
+                inset 0 -3px 5px rgba(0,0,0,0.3),
+                0 2px 5px rgba(0,0,0,0.4);
+        }
+        
+        .pot::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            height: 2px;
+            background: linear-gradient(to right, 
+                transparent 0%, 
+                rgba(255,255,255,0.3) 20%, 
+                rgba(255,255,255,0.3) 80%, 
+                transparent 100%);
+            border-radius: 50%;
+        }
+        
+        .soil {
+            position: absolute;
+            top: 6px;
+            left: 12px;
+            right: 12px;
+            height: 42px;
+            background: 
+                radial-gradient(circle at 20% 30%, #5C4033 0%, transparent 3px),
+                radial-gradient(circle at 60% 20%, #4A3428 0%, transparent 2px),
+                radial-gradient(circle at 80% 40%, #3D2817 0%, transparent 3px),
+                radial-gradient(circle at 30% 60%, #5C4033 0%, transparent 2px),
+                radial-gradient(circle at 70% 70%, #4A3428 0%, transparent 3px),
+                linear-gradient(to bottom, 
+                    #5C4033 0%, 
+                    #4A3428 30%, 
+                    #3D2817 60%, 
+                    #2D1810 100%);
+            border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+            box-shadow: 
+                inset 0 3px 8px rgba(0,0,0,0.6),
+                inset 0 -2px 5px rgba(92, 64, 51, 0.3);
+        }
+        
+        .drainage-hole {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #2D1810 0%, #1a0f08 100%);
+            border-radius: 50%;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.8),
+                0 1px 2px rgba(139, 69, 19, 0.3);
+        }
+        
+        .message {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #aaa;
+            text-align: center;
+            animation: fadeIn 1.5s ease-out 0.5s both;
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #FFD700;
+            animation: sparkle 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(180deg);
+            }
+        }
+        
+        .sparkle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 20%; left: 80%; animation-delay: 0.3s; }
+        .sparkle:nth-child(3) { top: 40%; left: 10%; animation-delay: 0.6s; }
+        .sparkle:nth-child(4) { top: 60%; left: 90%; animation-delay: 0.9s; }
+        .sparkle:nth-child(5) { top: 80%; left: 30%; animation-delay: 1.2s; }
+        .sparkle:nth-child(6) { top: 30%; left: 70%; animation-delay: 1.5s; }
+        .sparkle:nth-child(7) { top: 70%; left: 50%; animation-delay: 1.8s; }
+        .sparkle:nth-child(8) { top: 50%; left: 15%; animation-delay: 0.4s; }
+        .sparkle:nth-child(9) { top: 15%; left: 50%; animation-delay: 0.7s; }
+        .sparkle:nth-child(10) { top: 85%; left: 75%; animation-delay: 1s; }
+    </style>
+</head>
+<body>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    
+    <div class="pot-container">
+        <div class="plant-area">
+            <svg class="plant-svg" viewBox="0 0 200 200">
+                <g id="seed">
+                    <ellipse cx="100" cy="180" rx="8" ry="10" fill="#8B4513" opacity="0.9">
+                        <animate attributeName="ry" values="10;11;10" dur="2s" repeatCount="indefinite"/>
+                    </ellipse>
+                </g>
+            </svg>
+            
+            <div class="pot">
+                <div class="soil"></div>
+                <div class="drainage-hole"></div>
+            </div>
+        </div>
+        
+        <div class="message">🌱 Tu semilla está lista<br>Empieza a programar para verla crecer</div>
+    </div>
+    
+    <script>
+        const vscode = acquireVsCodeApi();
+        
+        window.addEventListener('message', event => {
+            const message = event.data;
+            if (message.type === 'update') {
+                console.log('Datos de planta:', message.plantData);
+            }
+        });
+    </script>
+</body>
+</html>
