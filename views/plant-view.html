@@ -45,8 +45,6 @@ body.day .water-btn{border-color:#2d8a2d;color:#1a6e1a;}
 .stats-box{width:100%;border-radius:10px;padding:12px;margin-top:8px;z-index:2;transition:background 2s,border-color 2s;}
 body.day   .stats-box{background:rgba(255,255,255,.5);border:1px solid #a5d6a7;}
 body.night .stats-box{background:#0f1a0f;border:1px solid #1a3a1a;}
-</style>
-</head>
 .stage-name{text-align:center;font-size:12px;font-weight:bold;color:var(--sc,#4ade80);margin-bottom:10px;letter-spacing:2px;}
 .stages-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;padding:0 2px;}
 .stage-dot{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;opacity:.3;transition:all .4s;}
@@ -88,11 +86,12 @@ body.night .streak-badge{background:#0f1a0f;border:1px solid #1a3a1a;color:#4a6a
 .mbox-face.top   {background:#c8780a;transform:rotateX(90deg) translateZ(28px);}
 .mbox-face.bottom{background:#3d1a00;transform:rotateX(-90deg) translateZ(28px);}
 .mbox-face.front::after,.mbox-face.back::after,.mbox-face.left::after,.mbox-face.right::after{content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:26px;color:#fff;text-shadow:0 0 4px #3d1a00,-1px -1px 0 #3d1a00,1px -1px 0 #3d1a00,-1px 1px 0 #3d1a00,1px 1px 0 #3d1a00;}
-@keyframes potPop{0%{opacity:0;transform:translateY(20px) scale(.5)}60%{transform:translateY(-8px) scale(1.1)}100%{opacity:1;transform:translateY(0) scale(1)}}
 .garden-plant{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
 .garden-plant-wrap{width:75px;height:100px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;animation:breathe 5s ease-in-out infinite;transform-origin:bottom center;}
 .garden-plant-wrap svg{width:75px;height:100px;flex-shrink:0;}
 .garden-plant-label{font-size:7px;color:#4a6a4a;letter-spacing:1px;}
+.garden-zzz{position:absolute;font-size:9px;font-weight:bold;color:#a0c8ff;pointer-events:none;animation:floatZzz 2s ease-out forwards;}
+.garden-need{position:absolute;font-size:16px;top:-22px;left:50%;transform:translateX(-50%);z-index:100;cursor:pointer;}
 #garden-row::before{content:'';position:fixed;bottom:0;left:0;right:0;height:130px;background:linear-gradient(rgba(0,80,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,80,0,.08) 1px,transparent 1px);background-size:24px 24px;border-top:1px solid rgba(0,100,0,.15);z-index:9997;pointer-events:none;}
 </style>
 </head>
@@ -287,6 +286,134 @@ function openBox(btnId, cubeId, emoji, plantType) {
   }, 150);
 }
 
+function startGardenLife(item) {
+  var sleeping = false;
+  var zzzTimer = null;
+  var needTimer = null;
+  var zzzInt = null;
+  var currentNeed = null;
+  var needs = ['💧','🪱','🤗','💧','💧'];
+
+  function closeSvgEyes(pw) {
+    var svg = pw.querySelector('svg');
+    if (!svg) return;
+    svg.querySelectorAll('circle').forEach(function(c) {
+      var cx = parseFloat(c.getAttribute('cx'));
+      var cy = parseFloat(c.getAttribute('cy'));
+      var r  = parseFloat(c.getAttribute('r'));
+      if (r >= 1.8 && r <= 3.5 && cy > 30 && cy < 55) {
+        var arc = document.createElementNS('http://www.w3.org/2000/svg','path');
+        arc.setAttribute('d','M'+(cx-r)+' '+cy+' Q'+cx+' '+(cy+r*1.4)+' '+(cx+r)+' '+cy);
+        arc.setAttribute('stroke','#3a3a3a');
+        arc.setAttribute('stroke-width','2');
+        arc.setAttribute('fill','none');
+        arc.setAttribute('stroke-linecap','round');
+        arc.setAttribute('class','sleep-eye');
+        c.parentNode.insertBefore(arc, c.nextSibling);
+        c.style.display = 'none';
+      }
+    });
+  }
+
+  function openSvgEyes(pw) {
+    var svg = pw.querySelector('svg');
+    if (!svg) return;
+    svg.querySelectorAll('.sleep-eye').forEach(function(e){ e.remove(); });
+    svg.querySelectorAll('circle').forEach(function(c){ c.style.display = ''; });
+  }
+
+  function spawnZzz() {
+    var z = document.createElement('div');
+    z.className = 'garden-zzz';
+    z.textContent = ['z','z','Z'][Math.floor(Math.random()*3)];
+    z.style.cssText = 'left:'+(38+Math.random()*24)+'%;bottom:'+(55+Math.random()*20)+'%;';
+    item.appendChild(z);
+    setTimeout(function(){ z.remove(); }, 2000);
+  }
+
+  function startSleep() {
+    if (currentNeed) return;
+    sleeping = true;
+    var pw = item.querySelector('.garden-plant-wrap');
+    if (pw) {
+      pw.style.animation = 'sleeping 3s ease-in-out infinite';
+      pw.style.filter = 'brightness(.85)';
+      closeSvgEyes(pw);
+    }
+    zzzInt = setInterval(spawnZzz, 900);
+  }
+
+  function wakeUp() {
+    sleeping = false;
+    clearInterval(zzzInt);
+    var pw = item.querySelector('.garden-plant-wrap');
+    if (pw) {
+      pw.style.animation = 'breathe 5s ease-in-out infinite';
+      pw.style.filter = '';
+      openSvgEyes(pw);
+    }
+    item.querySelectorAll('.garden-zzz').forEach(function(z){ z.remove(); });
+  }
+
+  function showNeed() {
+    if (currentNeed) return;
+    var emoji = needs[Math.floor(Math.random()*needs.length)];
+    var n = document.createElement('div');
+    n.className = 'garden-need';
+    n.textContent = emoji;
+    n.style.cssText = 'position:absolute;font-size:16px;top:-22px;left:50%;transform:translateX(-50%);cursor:pointer;animation:none;opacity:1;z-index:100;';
+    item.appendChild(n);
+    currentNeed = n;
+    item._needsWater = (emoji === '💧');
+    if (sleeping) wakeUp();
+    if (emoji !== '💧') {
+      n.addEventListener('click', function() {
+        n.style.transition = 'opacity .3s,transform .3s';
+        n.style.opacity = '0';
+        n.style.transform = 'translateX(-50%) translateY(-12px) scale(1.4)';
+        setTimeout(function(){ n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }, 350);
+      });
+      setTimeout(function() {
+        if (currentNeed === n) { n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }
+      }, 30000);
+    } else {
+      setTimeout(function() {
+        if (currentNeed === n) { n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }
+      }, 3600000);
+    }
+  }
+
+  item.satisfyWater = function() {
+    if (!item._needsWater || !currentNeed) return false;
+    var n = currentNeed;
+    n.style.transition = 'opacity .4s,transform .4s';
+    n.style.opacity = '0';
+    n.style.transform = 'translateX(-50%) translateY(-14px) scale(1.5)';
+    setTimeout(function(){ n.remove(); currentNeed = null; item._needsWater = false; }, 400);
+    var pw = item.querySelector('.garden-plant-wrap');
+    if (pw) {
+      pw.style.filter = 'brightness(1.15) saturate(1.3)';
+      setTimeout(function(){ pw.style.filter = ''; }, 1500);
+    }
+    needTimer = setTimeout(showNeed, 3600000);
+    return true;
+  };
+
+  function scheduleSleep() {
+    zzzTimer = setTimeout(function(){
+      startSleep();
+      scheduleSleep();
+    }, 300000 + Math.random()*300000);
+  }
+
+  function scheduleNeed() {
+    needTimer = setTimeout(showNeed, 180000 + Math.random()*120000);
+  }
+
+  scheduleSleep();
+  scheduleNeed();
+}
+
 function updateDayNight() {
   const h = new Date().getHours(), day = h>=6&&h<20;
   if (day===isDay) return; isDay=day;
@@ -422,6 +549,7 @@ function updatePlant(data) {
           pw.innerHTML = wrap.innerHTML.replace('width="160" height="215"','width="75" height="100"');
           var lbl = document.createElement('div'); lbl.className = 'garden-plant-label'; lbl.textContent = '🌸';
           item.appendChild(pw); item.appendChild(lbl); gardenRow.appendChild(item);
+          startGardenLife(item);
         }, 1500);
       }
     } else if (firstLoad) setMood('sleep');
@@ -460,6 +588,97 @@ updateDayNight(); setInterval(updateDayNight,60000);
   wrap.classList.add('anim-sleep');
 })();
 vscode.postMessage({type:'ready'});
+
+(function setupWateringCan() {
+  var can = document.createElement('div');
+  can.id = 'watering-can';
+  can.textContent = '🪣';
+  can.style.cssText = 'position:fixed;font-size:28px;cursor:grab;z-index:99990;user-select:none;transition:transform .15s;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));';
+  document.body.appendChild(can);
+
+  function placeCanAbovePlant() {
+    var badge = document.getElementById('streak-badge');
+    if (!badge) return;
+    var r = badge.getBoundingClientRect();
+    can.style.left = (r.right + 10) + 'px';
+    can.style.top  = (r.top + r.height/2 - 14) + 'px';
+  }
+  placeCanAbovePlant();
+
+  var dragging = false, ox = 0, oy = 0;
+
+  can.addEventListener('mousedown', function(e) {
+    dragging = true;
+    ox = e.clientX - can.getBoundingClientRect().left;
+    oy = e.clientY - can.getBoundingClientRect().top;
+    can.style.cursor = 'grabbing';
+    can.style.transform = 'scale(1.2) rotate(-20deg)';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    can.style.left = (e.clientX - ox) + 'px';
+    can.style.top  = (e.clientY - oy) + 'px';
+  });
+
+  document.addEventListener('mouseup', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    can.style.cursor = 'grab';
+    can.style.transform = '';
+    var cr = can.getBoundingClientRect();
+    var canCX = cr.left + cr.width/2;
+    var canCY = cr.top  + cr.height/2;
+    var watered = false;
+    document.querySelectorAll('.garden-plant').forEach(function(plant) {
+      var pr = plant.getBoundingClientRect();
+      if (canCX >= pr.left && canCX <= pr.right && canCY >= pr.top && canCY <= pr.bottom) {
+        if (plant.satisfyWater && plant.satisfyWater()) {
+          watered = true;
+          var drops = document.createElement('div');
+          drops.style.cssText = 'position:fixed;left:'+(pr.left+pr.width/2-10)+'px;top:'+(pr.top-10)+'px;font-size:18px;pointer-events:none;z-index:99991;animation:floatScore 1s ease-out forwards;';
+          drops.textContent = '💦';
+          document.body.appendChild(drops);
+          setTimeout(function(){ drops.remove(); }, 1000);
+        }
+      }
+    });
+    setTimeout(placeCanAbovePlant, 400);
+  });
+
+  can.addEventListener('touchstart', function(e) {
+    dragging = true;
+    var t = e.touches[0];
+    ox = t.clientX - can.getBoundingClientRect().left;
+    oy = t.clientY - can.getBoundingClientRect().top;
+    can.style.transform = 'scale(1.2) rotate(-20deg)';
+    e.preventDefault();
+  }, {passive:false});
+
+  document.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var t = e.touches[0];
+    can.style.left = (t.clientX - ox) + 'px';
+    can.style.top  = (t.clientY - oy) + 'px';
+  }, {passive:false});
+
+  document.addEventListener('touchend', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    can.style.transform = '';
+    var cr = can.getBoundingClientRect();
+    var canCX = cr.left + cr.width/2;
+    var canCY = cr.top  + cr.height/2;
+    document.querySelectorAll('.garden-plant').forEach(function(plant) {
+      var pr = plant.getBoundingClientRect();
+      if (canCX >= pr.left && canCX <= pr.right && canCY >= pr.top && canCY <= pr.bottom) {
+        if (plant.satisfyWater) plant.satisfyWater();
+      }
+    });
+    setTimeout(placeCanAbovePlant, 400);
+  });
+})();
 window.addEventListener('message', e=>{
   const msg=e.data;
   if (msg.type==='update') {
