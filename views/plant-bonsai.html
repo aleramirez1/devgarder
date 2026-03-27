@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 Bonsai Garden</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Courier New', monospace;
+  display:flex; flex-direction:column; align-items:center;
+  padding:14px 12px 20px; min-height:100vh;
+  background: linear-gradient(180deg,#0a0a1a 0%,#1a0a14 60%,#0a0810 100%);
+  color:#ffb0c8;
+  image-rendering: pixelated;
+}
+.title { font-size:9px; letter-spacing:4px; text-transform:uppercase; margin-bottom:10px; opacity:.7; color:#ff80a0; }
+.scene { position:relative; width:190px; height:230px; display:flex; align-items:flex-end; justify-content:center; }
+#plant-wrap { position:relative; width:100%; height:100%; display:flex; align-items:flex-end; justify-content:center; }
+@keyframes breathe{0%,100%{transform:scaleY(1) translateY(0)}50%{transform:scaleY(1.015) translateY(-2px)}}
+@keyframes sleeping{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.005) translateY(-1px)}}
+.anim-breathe{animation:breathe 5s ease-in-out infinite;transform-origin:bottom center;}
+.anim-sleep  {animation:sleeping 3s ease-in-out infinite;transform-origin:bottom center;}
+@keyframes faceWater{0%{transform:rotate(0deg)}20%{transform:rotate(-8deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-4deg)}100%{transform:rotate(0deg)}}
+.face-watered{animation:faceWater 0.9s ease-in-out 1;transform-origin:center center;}
+.zzz{position:absolute;font-weight:bold;color:#ff80a0;pointer-events:none;z-index:20;animation:floatZzz 2s ease-out infinite;}
+@keyframes floatZzz{0%{opacity:0;transform:translate(0,0) scale(.5)}30%{opacity:1}100%{opacity:0;transform:translate(14px,-35px) scale(1.3)}}
+.drop{position:absolute;width:5px;height:8px;background:#ff80a0;border-radius:50%;opacity:0;animation:falling .9s ease-in forwards;}
+@keyframes falling{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(65px)}}
+.splash{position:absolute;font-size:16px;pointer-events:none;animation:splashAnim .7s ease-out forwards;}
+@keyframes splashAnim{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(2) translateY(-12px)}}
+.water-btn{margin-top:8px;background:none;border:1px solid #80204a;border-radius:10px;padding:6px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;color:#ff80a0;font-size:10px;font-family:'Courier New',monospace;letter-spacing:1px;transition:all .2s;user-select:none;}
+.water-btn:hover{background:rgba(255,128,160,.1);border-color:#ff80a0;}
+.water-btn:active{transform:scale(.96);}
+.stats-box{width:100%;border-radius:10px;padding:12px;margin-top:8px;background:#0a0010;border:1px solid #80204a;}
+.stage-name{text-align:center;font-size:12px;font-weight:bold;color:#ff80a0;margin-bottom:8px;letter-spacing:2px;}
+.stat-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px;color:#804060;}
+.stat-val{font-weight:bold;color:#ffb0c8;}
+.progress-track{width:100%;height:5px;border-radius:3px;overflow:hidden;background:#1a0018;border:1px solid #80204a;margin-top:8px;}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#80204a,#ff80a0);transition:width .7s cubic-bezier(.4,0,.2,1);}
+.message{text-align:center;font-size:10px;font-style:italic;margin-top:8px;color:#804060;}
+.back-btn{margin-top:10px;background:none;border:1px solid #80204a;border-radius:8px;padding:5px 12px;cursor:pointer;color:#ff80a0;font-size:9px;font-family:'Courier New',monospace;letter-spacing:1px;transition:all .2s;}
+.back-btn:hover{background:rgba(255,128,160,.1);}
+.float-point{position:fixed;font-size:11px;font-weight:bold;pointer-events:none;animation:floatScore 1.2s ease-out forwards;z-index:200;color:#ff80a0;}
+@keyframes floatScore{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-45px)}}
+</style>
+</head>
+<body>
+<div class="title">🌸 bonsai garden</div>
+<div class="scene">
+  <div id="plant-wrap" class="anim-sleep"></div>
+</div>
+<button class="water-btn" onclick="waterPlant()">
+  <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+    <ellipse cx="9" cy="12" rx="6" ry="4.5" fill="#1a0010" stroke="#ff80a0" stroke-width=".8"/>
+    <path d="M15 10 Q19 8 18 14 Q17 17 15 15" stroke="#ff80a0" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <path d="M3 11 Q1 9 2 7" stroke="#ff80a0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="2.2" cy="6.5" r="1.5" fill="#ff80a0"/>
+  </svg>
+  regar
+</button>
+<div class="stats-box">
+  <div class="stage-name" id="stage-name">🌸 Semilla</div>
+  <div class="stat-row"><span>líneas de código</span><span class="stat-val" id="points">0</span></div>
+  <div class="stat-row"><span>tiempo activo</span><span class="stat-val" id="time">0 min</span></div>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  <div class="message" id="message">Escribe código para despertar tu bonsai...</div>
+</div>
+<button class="back-btn" onclick="window.close()">← volver</button>
+<script>
+const vscode = acquireVsCodeApi();
+
+const POT = `
+  <rect x="40" y="192" width="80" height="4" rx="2" fill="#000" opacity=".3"/>
+  <rect x="38" y="182" width="84" height="12" rx="3" fill="#8b4513"/>
+  <rect x="40" y="183" width="80" height="8" rx="2" fill="#a0522d"/>
+  <rect x="36" y="190" width="88" height="6" rx="3" fill="#6b3410"/>
+  <ellipse cx="80" cy="182" rx="40" ry="5" fill="#2a1a0a"/>
+  <ellipse cx="80" cy="182" rx="36" ry="3.5" fill="#3d2510"/>`;
+
+function getBonsaiFace(mood) {
+  if (mood === 'sleep') return `
+    <rect x="70" y="148" width="6" height="3" rx="1" fill="#3a1a0a"/>
+    <rect x="84" y="148" width="6" height="3" rx="1" fill="#3a1a0a"/>
+    <rect x="72" y="155" width="16" height="3" rx="1" fill="#3a1a0a"/>`;
+  if (mood === 'happy') return `
+    <rect x="69" y="146" width="5" height="5" rx="1" fill="#3a1a0a"/>
+    <rect x="86" y="146" width="5" height="5" rx="1" fill="#3a1a0a"/>
+    <rect x="70" y="147" width="2" height="2" fill="#fff" opacity=".7"/>
+    <rect x="87" y="147" width="2" height="2" fill="#fff" opacity=".7"/>
+    <path d="M70 155 Q80 162 90 155" stroke="#3a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <rect x="66" y="154" width="5" height="5" rx="2" fill="#f472b6" opacity=".5"/>
+    <rect x="89" y="154" width="5" height="5" rx="2" fill="#f472b6" opacity=".5"/>`;
+  if (mood === 'watered') return `
+    <path d="M68 147 Q72 143 76 147" stroke="#3a1a0a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M84 147 Q88 143 92 147" stroke="#3a1a0a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M70 155 Q80 161 90 155" stroke="#3a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <rect x="64" y="153" width="6" height="6" rx="3" fill="#ff80a0" opacity=".35"/>
+    <rect x="90" y="153" width="6" height="6" rx="3" fill="#ff80a0" opacity=".35"/>`;
+  if (mood === 'love') return `
+    <path d="M67 145 Q69 142 71 144 Q73 142 75 145 Q71 149 67 145Z" fill="#e11d48"/>
+    <path d="M85 145 Q87 142 89 144 Q91 142 93 145 Q89 149 85 145Z" fill="#e11d48"/>
+    <path d="M69 155 Q80 164 91 155" stroke="#3a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  return `
+    <rect x="70" y="146" width="5" height="5" rx="1" fill="#3a1a0a"/>
+    <rect x="85" y="146" width="5" height="5" rx="1" fill="#3a1a0a"/>
+    <rect x="71" y="147" width="2" height="2" fill="#fff" opacity=".6"/>
+    <rect x="86" y="147" width="2" height="2" fill="#fff" opacity=".6"/>
+    <path d="M72 155 Q80 159 88 155" stroke="#3a1a0a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+}
+
+const TRUNK = `fill="#6b3410"`;
+const LEAF  = `fill="#1a5c1a"`;
+const LEAFL = `fill="#2d8a2d"`;
+const FLWR  = `fill="#f472b6"`;
+
+function buildBonsaiSVG(stage, mood) {
+  const face = getBonsaiFace(mood);
+  if (stage === 0) return `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">
+    ${POT}
+    <rect x="72" y="172" width="16" height="10" rx="2" fill="#8b4513"/>
+    <rect x="74" y="174" width="6" height="4" rx="1" fill="#a0522d" opacity=".7"/>
+    <g id="plant-face">
+      ${mood==='sleep'?`<rect x="74" y="174" width="4" height="2" rx="1" fill="#3a1a0a"/><rect x="82" y="174" width="4" height="2" rx="1" fill="#3a1a0a"/><rect x="75" y="178" width="10" height="2" rx="1" fill="#3a1a0a"/>`:
+        mood==='happy'?`<rect x="74" y="174" width="4" height="3" rx="1" fill="#3a1a0a"/><rect x="82" y="174" width="4" height="3" rx="1" fill="#3a1a0a"/><path d="M74 178 Q80 182 86 178" stroke="#3a1a0a" stroke-width="1.5" fill="none"/>`:
+        `<rect x="74" y="174" width="4" height="3" rx="1" fill="#3a1a0a"/><rect x="82" y="174" width="4" height="3" rx="1" fill="#3a1a0a"/><rect x="76" y="178" width="8" height="2" rx="1" fill="#3a1a0a"/>`}
+    </g>
+  </svg>`;
+
+  if (stage === 1) return `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">
+    ${POT}
+    <rect x="76" y="158" width="10" height="24" rx="2" ${TRUNK}/>
+    <rect x="74" y="148" width="10" height="14" rx="2" ${TRUNK} transform="rotate(-5 74 148)"/>
+    <rect x="60" y="136" width="28" height="16" rx="6" ${LEAF}/>
+    <rect x="72" y="130" width="20" height="14" rx="5" ${LEAFL}/>
+    <rect x="64" y="132" width="12" height="8" rx="3" ${LEAFL}/>
+  </svg>`;
+
+  if (stage === 2) return `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">
+    ${POT}
+    <rect x="76" y="152" width="12" height="30" rx="3" ${TRUNK}/>
+    <rect x="72" y="136" width="12" height="20" rx="3" ${TRUNK} transform="rotate(-8 72 136)"/>
+    <rect x="78" y="120" width="10" height="18" rx="3" ${TRUNK} transform="rotate(5 78 120)"/>
+    <rect x="56" y="130" width="22" height="8" rx="3" ${TRUNK}/>
+    <rect x="98" y="124" width="20" height="8" rx="3" ${TRUNK}/>
+    <rect x="42" y="108" width="36" height="26" rx="10" ${LEAF}/>
+    <rect x="46" y="104" width="28" height="18" rx="8" ${LEAFL}/>
+    <rect x="88" y="102" width="34" height="26" rx="10" ${LEAF}/>
+    <rect x="92" y="98" width="26" height="18" rx="8" ${LEAFL}/>
+    <rect x="50" y="106" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="62" y="104" width="5" height="5" rx="2" ${FLWR}/>
+    <rect x="96" y="100" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="108" y="104" width="5" height="5" rx="2" ${FLWR}/>
+  </svg>`;
+
+  if (stage === 3) return `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">
+    ${POT}
+    <rect x="74" y="148" width="14" height="34" rx="4" ${TRUNK}/>
+    <rect x="70" y="128" width="14" height="24" rx="4" ${TRUNK} transform="rotate(-10 70 128)"/>
+    <rect x="76" y="108" width="12" height="22" rx="4" ${TRUNK} transform="rotate(6 76 108)"/>
+    <rect x="44" y="120" width="30" height="8" rx="3" ${TRUNK}/>
+    <rect x="100" y="112" width="28" height="8" rx="3" ${TRUNK}/>
+    <rect x="60" y="100" width="20" height="6" rx="3" ${TRUNK}/>
+    <rect x="30" y="94" width="44" height="30" rx="12" ${LEAF}/>
+    <rect x="34" y="88" width="36" height="22" rx="10" ${LEAFL}/>
+    <rect x="86" y="88" width="42" height="28" rx="12" ${LEAF}/>
+    <rect x="90" y="82" width="34" height="20" rx="10" ${LEAFL}/>
+    <rect x="54" y="78" width="32" height="24" rx="10" ${LEAF}/>
+    <rect x="58" y="72" width="24" height="16" rx="8" ${LEAFL}/>
+    <rect x="36" y="90" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="52" y="86" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="92" y="84" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="108" y="88" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="62" y="74" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="74" y="70" width="5" height="5" rx="2" ${FLWR}/>
+    <g id="plant-face">${face}</g>
+  </svg>`;
+
+  return `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">
+    ${POT}
+    <rect x="74" y="148" width="14" height="34" rx="4" ${TRUNK}/>
+    <rect x="70" y="128" width="14" height="24" rx="4" ${TRUNK} transform="rotate(-10 70 128)"/>
+    <rect x="76" y="108" width="12" height="22" rx="4" ${TRUNK} transform="rotate(6 76 108)"/>
+    <rect x="44" y="120" width="30" height="8" rx="3" ${TRUNK}/>
+    <rect x="100" y="112" width="28" height="8" rx="3" ${TRUNK}/>
+    <rect x="60" y="100" width="20" height="6" rx="3" ${TRUNK}/>
+    <rect x="28" y="90" width="48" height="34" rx="14" ${LEAF}/>
+    <rect x="32" y="84" width="40" height="24" rx="12" ${LEAFL}/>
+    <rect x="84" y="84" width="46" height="32" rx="14" ${LEAF}/>
+    <rect x="88" y="78" width="38" height="22" rx="12" ${LEAFL}/>
+    <rect x="52" y="72" width="36" height="28" rx="12" ${LEAF}/>
+    <rect x="56" y="66" width="28" height="20" rx="10" ${LEAFL}/>
+    <rect x="32" y="86" width="8" height="8" rx="4" ${FLWR}/>
+    <rect x="44" y="82" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="56" y="86" width="8" height="8" rx="4" ${FLWR}/>
+    <rect x="90" y="80" width="8" height="8" rx="4" ${FLWR}/>
+    <rect x="104" y="84" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="116" y="88" width="6" height="6" rx="3" ${FLWR}/>
+    <rect x="58" y="68" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="70" y="64" width="8" height="8" rx="4" ${FLWR}/>
+    <rect x="82" y="68" width="7" height="7" rx="3" ${FLWR}/>
+    <rect x="40" y="130" width="4" height="4" rx="2" fill="#f9a8d4" opacity=".7"/>
+    <rect x="110" y="124" width="4" height="4" rx="2" fill="#f9a8d4" opacity=".7"/>
+    <rect x="70" y="140" width="3" height="3" rx="1" fill="#f9a8d4" opacity=".5"/>
+    <rect x="95" y="136" width="3" height="3" rx="1" fill="#f9a8d4" opacity=".5"/>
+    <g id="plant-face">${face}</g>
+  </svg>`;
+}
+
+let currentStage = -1, currentMood = 'sleep';
+let idleTimer = null, sleepTimer = null, zzzInterval = null;
+
+const STAGE_NAMES = ['🌸 Semilla','🌸 Brote','🌸 Joven','🌸 Bonsai','🌸 Florecido'];
+const THRESHOLDS  = [200, 500, 900, 1500, Infinity];
+const MESSAGES    = [
+  'Escribe código para despertar tu bonsai...',
+  '¡Está brotando! Sigue programando 🌱',
+  'Tu bonsai toma forma 🌸',
+  '¡Casi florecido! Sigue así...',
+  '🌸 ¡Bonsai en plena flor!'
+];
+
+function renderPlant(stage, mood) {
+  const wrap = document.getElementById('plant-wrap');
+  wrap.innerHTML = buildBonsaiSVG(stage, mood);
+  wrap.style.filter = `drop-shadow(0 0 14px #ff80a0)`;
+  wrap.classList.remove('anim-breathe','anim-sleep');
+  wrap.classList.add(mood === 'sleep' ? 'anim-sleep' : 'anim-breathe');
+}
+
+function setMood(mood, duration) {
+  currentMood = mood;
+  renderPlant(currentStage, mood);
+  const wrap = document.getElementById('plant-wrap');
+  wrap.classList.remove('anim-breathe','anim-sleep');
+  if (mood === 'sleep') { wrap.classList.add('anim-sleep'); startZzz(); }
+  else { stopZzz(); wrap.classList.add('anim-breathe');
+    if (mood === 'watered') setTimeout(() => {
+      const f = document.getElementById('plant-face');
+      if (f) { f.classList.add('face-watered'); setTimeout(()=>f.classList.remove('face-watered'),950); }
+    }, 50);
+  }
+  if (duration) { clearTimeout(sleepTimer); sleepTimer = setTimeout(()=>{ if(currentMood===mood) setMood('idle'); }, duration); }
+}
+
+function startZzz() {
+  stopZzz();
+  const scene = document.querySelector('.scene');
+  zzzInterval = setInterval(() => {
+    if (currentMood !== 'sleep') return stopZzz();
+    const z = document.createElement('div'); z.className = 'zzz';
+    z.textContent = ['z','z','Z'][Math.floor(Math.random()*3)];
+    z.style.cssText = `left:${54+Math.random()*18}%;bottom:${currentStage===0?'30%':'50%'};font-size:${8+Math.random()*7}px;`;
+    scene.appendChild(z); setTimeout(()=>z.remove(), 2000);
+  }, 700);
+}
+function stopZzz() { clearInterval(zzzInterval); document.querySelectorAll('.zzz').forEach(z=>z.remove()); }
+
+function onActivity() {
+  if (currentStage < 0) return;
+  setMood('happy', 3000);
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => setMood('sleep'), 12000);
+}
+
+function waterPlant() {
+  const scene = document.querySelector('.scene');
+  for (let i = 0; i < 9; i++) setTimeout(() => {
+    const d = document.createElement('div'); d.className = 'drop';
+    d.style.cssText = `left:${48+Math.random()*32}%;top:${6+Math.random()*20}%;animation-delay:${Math.random()*.15}s;`;
+    scene.appendChild(d); setTimeout(()=>d.remove(), 1000);
+  }, i*65);
+  setTimeout(() => {
+    const sp = document.createElement('div'); sp.className = 'splash'; sp.textContent = '🌸';
+    sp.style.cssText = `left:56%;bottom:40%;`; scene.appendChild(sp); setTimeout(()=>sp.remove(), 800);
+  }, 350);
+  setMood('watered', 4000);
+  vscode.postMessage({ type: 'water' });
+}
+
+function updatePlant(data) {
+  const stage = data.stage || 0;
+  const lines = data.linesWritten || 0;
+  const mins  = Math.floor((data.totalTime || 0) / 60);
+  if (stage !== currentStage) {
+    const first = currentStage === -1;
+    currentStage = stage;
+    renderPlant(stage, currentMood);
+    if (stage === 4) setMood('love', 5000);
+    else if (first) setMood('sleep');
+    if (first) { clearTimeout(idleTimer); idleTimer = setTimeout(()=>setMood('sleep'), 12000); }
+  }
+  document.getElementById('stage-name').textContent = STAGE_NAMES[stage];
+  document.getElementById('points').textContent = lines;
+  document.getElementById('time').textContent = mins + ' min';
+  document.getElementById('message').textContent = MESSAGES[stage];
+  const prev = stage > 0 ? THRESHOLDS[stage-1] : 0;
+  const next = THRESHOLDS[stage];
+  const pct  = next === Infinity ? 100 : Math.min(100, Math.round(((lines-prev)/(next-prev))*100));
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+vscode.postMessage({ type: 'ready' });
+window.addEventListener('message', e => {
+  const msg = e.data;
+  if (msg.type === 'update') updatePlant(msg.plantData);
+  if (msg.type === 'wake' || msg.type === 'points') onActivity();
+});
+</script>
+</body>
+</html>

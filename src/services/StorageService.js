@@ -1,14 +1,18 @@
 class StorageService {
     constructor(context) {
-        this.context = context;
+        this._context = context;
     }
 
-    save(key, data) {
-        return this.context.globalState.update(key, data);
+    save(data) {
+        this._context.globalState.update('plantData', data);
     }
 
-    load(key) {
-        return this.context.globalState.get(key);
+    load() {
+        return null; 
+    }
+
+    clear() {
+        this._context.globalState.update('plantData', undefined);
     }
 }
 

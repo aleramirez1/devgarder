@@ -25,7 +25,7 @@
         {
           "id": "code-garden",
           "title": "Code Garden",
-          "icon": "$(symbol-color)"
+          "icon": "resources/plant-icon.svg"
         }
       ]
     },

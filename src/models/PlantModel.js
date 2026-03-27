@@ -1,41 +1,28 @@
 class PlantModel {
     constructor() {
-        this.growth = 0;
+        this.linesWritten = 0;  
         this.stage = 0;
-        this.lastActive = Date.now();
         this.totalTime = 0;
-    }
-
-    updateGrowth(amount) {
-        this.growth += amount;
-        this.updateStage();
-    }
-
-    updateStage() {
-        if (this.growth < 20) {
-            this.stage = 0;
-        } else if (this.growth < 60) {
-            this.stage = 1;
-        } else if (this.growth < 120) {
-            this.stage = 2;
-        } else if (this.growth < 200) {
-            this.stage = 3;
-        } else {
-            this.stage = 4;
-        }
+        this.consecutiveDays = 0;
+        this.lastDay = null;
     }
 
     toJSON() {
         return {
-            growth: this.growth,
+            linesWritten: this.linesWritten,
             stage: this.stage,
-            lastActive: this.lastActive,
-            totalTime: this.totalTime
+            totalTime: this.totalTime,
+            consecutiveDays: this.consecutiveDays,
+            lastDay: this.lastDay
         };
     }
 
     fromJSON(data) {
-        Object.assign(this, data);
+        this.linesWritten    = data.linesWritten    ?? 0;
+        this.stage           = data.stage           ?? 0;
+        this.totalTime       = data.totalTime       ?? 0;
+        this.consecutiveDays = data.consecutiveDays ?? 0;
+        this.lastDay         = data.lastDay         ?? null;
     }
 }
 
