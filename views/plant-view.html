@@ -79,6 +79,16 @@ body.night .streak-badge{background:#0f1a0f;border:1px solid #1a3a1a;color:#4a6a
 @keyframes spinBox{from{transform:rotateX(20deg) rotateY(0deg)}to{transform:rotateX(20deg) rotateY(360deg)}}
 @keyframes floatBox{0%,100%{margin-top:0}50%{margin-top:-8px}}
 .mbox-face{position:absolute;width:56px;height:56px;border:2px solid #3d1a00;box-sizing:border-box;}
+#cube-cactus .mbox-face,#cube-daisy .mbox-face,#cube-alien .mbox-face{width:40px;height:40px;}
+#cube-cactus .mbox-face.front,#cube-daisy .mbox-face.front,#cube-alien .mbox-face.front{transform:translateZ(20px);}
+#cube-cactus .mbox-face.back,#cube-daisy .mbox-face.back,#cube-alien .mbox-face.back{transform:rotateY(180deg) translateZ(20px);}
+#cube-cactus .mbox-face.left,#cube-daisy .mbox-face.left,#cube-alien .mbox-face.left{transform:rotateY(-90deg) translateZ(20px);}
+#cube-cactus .mbox-face.right,#cube-daisy .mbox-face.right,#cube-alien .mbox-face.right{transform:rotateY(90deg) translateZ(20px);}
+#cube-cactus .mbox-face.top,#cube-daisy .mbox-face.top,#cube-alien .mbox-face.top{transform:rotateX(90deg) translateZ(20px);}
+#cube-cactus .mbox-face.bottom,#cube-daisy .mbox-face.bottom,#cube-alien .mbox-face.bottom{transform:rotateX(-90deg) translateZ(20px);}
+#cube-cactus .mbox-face.front::after,#cube-cactus .mbox-face.back::after,#cube-cactus .mbox-face.left::after,#cube-cactus .mbox-face.right::after,
+#cube-daisy .mbox-face.front::after,#cube-daisy .mbox-face.back::after,#cube-daisy .mbox-face.left::after,#cube-daisy .mbox-face.right::after,
+#cube-alien .mbox-face.front::after,#cube-alien .mbox-face.back::after,#cube-alien .mbox-face.left::after,#cube-alien .mbox-face.right::after{font-size:18px;}
 .mbox-face.front {background:#a05010;transform:translateZ(28px);}
 .mbox-face.back  {background:#7a3808;transform:rotateY(180deg) translateZ(28px);}
 .mbox-face.left  {background:#7a3808;transform:rotateY(-90deg) translateZ(28px);}
@@ -89,10 +99,11 @@ body.night .streak-badge{background:#0f1a0f;border:1px solid #1a3a1a;color:#4a6a
 .garden-plant{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
 .garden-plant-wrap{width:75px;height:100px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;animation:breathe 5s ease-in-out infinite;transform-origin:bottom center;}
 .garden-plant-wrap svg{width:75px;height:100px;flex-shrink:0;}
-.garden-plant-label{font-size:7px;color:#4a6a4a;letter-spacing:1px;}
+.garden-plant-label{font-size:7px;color:#e8f0e0;letter-spacing:1px;}
 .garden-zzz{position:absolute;font-size:9px;font-weight:bold;color:#a0c8ff;pointer-events:none;animation:floatZzz 2s ease-out forwards;}
 .garden-need{position:absolute;font-size:16px;top:-22px;left:50%;transform:translateX(-50%);z-index:100;cursor:pointer;}
-#garden-row::before{content:'';position:fixed;bottom:0;left:0;right:0;height:130px;background:linear-gradient(rgba(0,80,0,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,80,0,.08) 1px,transparent 1px);background-size:24px 24px;border-top:1px solid rgba(0,100,0,.15);z-index:9997;pointer-events:none;}
+@keyframes gardenShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg) scale(1.08)}40%{transform:rotate(8deg) scale(1.08)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+#garden-row::before{display:none;}
 </style>
 </head>
 <body class="day">
@@ -104,7 +115,7 @@ body.night .streak-badge{background:#0f1a0f;border:1px solid #1a3a1a;color:#4a6a
   <div class="particles" id="particles"></div>
   <div id="plant-wrap" class="anim-sleep"></div>
 </div>
-<button class="water-btn" onclick="waterPlant()">
+<button class="water-btn" onclick="waterPlant()" title="Regar tu planta principal">
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
     <ellipse cx="9" cy="12" rx="6" ry="4.5" fill="#1a4a2a" stroke="#4ade80" stroke-width=".8"/>
     <path d="M15 10 Q19 8 18 14 Q17 17 15 15" stroke="#4ade80" stroke-width="1.2" fill="none" stroke-linecap="round"/>
@@ -133,25 +144,127 @@ body.night .streak-badge{background:#0f1a0f;border:1px solid #1a3a1a;color:#4a6a
 </div>
 <div class="streak-badge" id="streak-badge">🔥 <span id="streak-text">Sin racha aún</span></div>
 
-<button id="btn-cactus" style="position:fixed;top:calc(50% + 3cm);left:calc(50% - 45px);width:90px;height:90px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;" onclick="openBox('btn-cactus','cube-cactus','🌱','cactus')">
-  <div id="cube-cactus" style="width:56px;height:56px;position:absolute;top:8px;left:12px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-2s;pointer-events:none;">
+<button id="btn-cactus" style="position:fixed;top:calc(50% + 3cm);left:calc(50% - 100px);width:65px;height:65px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;display:none;" onclick="openBox('btn-cactus','cube-cactus','🌱','cactus')">
+  <div id="cube-cactus" style="width:40px;height:40px;position:absolute;top:6px;left:10px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-2s;pointer-events:none;">
     <div class="mbox-face front"></div><div class="mbox-face back"></div><div class="mbox-face left"></div><div class="mbox-face right"></div><div class="mbox-face top"></div><div class="mbox-face bottom"></div>
   </div>
 </button>
 
-<button id="btn-daisy" style="position:fixed;top:calc(50% + 3cm);left:calc(50% + 55px);width:90px;height:90px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;" onclick="openBox('btn-daisy','cube-daisy','🌼','daisy')">
-  <div id="cube-daisy" style="width:56px;height:56px;position:absolute;top:8px;left:12px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-3s;pointer-events:none;">
+<button id="btn-daisy" style="position:fixed;top:calc(50% + 3cm);left:calc(50% - 30px);width:65px;height:65px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;display:none;" onclick="openBox('btn-daisy','cube-daisy','🌼','daisy')">
+  <div id="cube-daisy" style="width:40px;height:40px;position:absolute;top:6px;left:10px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-3s;pointer-events:none;">
     <div class="mbox-face front"></div><div class="mbox-face back"></div><div class="mbox-face left"></div><div class="mbox-face right"></div><div class="mbox-face top"></div><div class="mbox-face bottom"></div>
   </div>
 </button>
 
-<button id="btn-alien" style="position:fixed;top:calc(50% + 3cm);left:calc(50% + 155px);width:90px;height:90px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;" onclick="openBox('btn-alien','cube-alien','👽','alien')">
-  <div id="cube-alien" style="width:56px;height:56px;position:absolute;top:8px;left:12px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-4s;pointer-events:none;">
+<button id="btn-alien" style="position:fixed;top:calc(50% + 3cm);left:calc(50% + 40px);width:65px;height:65px;background:transparent;border:none;cursor:pointer;z-index:99999;padding:0;display:none;" onclick="openBox('btn-alien','cube-alien','👽','alien')">
+  <div id="cube-alien" style="width:40px;height:40px;position:absolute;top:6px;left:10px;transform-style:preserve-3d;animation:spinBox 5s linear infinite,floatBox 2s ease-in-out infinite;animation-delay:-4s;pointer-events:none;">
     <div class="mbox-face front"></div><div class="mbox-face back"></div><div class="mbox-face left"></div><div class="mbox-face right"></div><div class="mbox-face top"></div><div class="mbox-face bottom"></div>
   </div>
 </button>
 
-<div id="garden-row" style="position:fixed;bottom:16px;left:calc(50% - 4cm);display:flex;flex-wrap:wrap;justify-content:center;gap:10px;z-index:9998;pointer-events:none;"></div>
+<div id="garden-tools" style="display:none;"></div>
+<div id="garden-row" style="position:fixed;bottom:0;left:0;right:0;height:220px;z-index:9996;overflow:hidden;pointer-events:none;">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#5bc8f0 0%,#80ddf8 30%,#70d040 55%,#50a820 100%);"></div>
+  <div style="position:absolute;top:4px;left:20px;width:110px;height:62px;border-radius:50%;background:radial-gradient(ellipse,#80d840 30%,#3a9818 100%);"></div>
+  <div style="position:absolute;top:10px;left:120px;width:85px;height:50px;border-radius:50%;background:radial-gradient(ellipse,#a0e850 30%,#4ab020 100%);"></div>
+  <div style="position:absolute;top:6px;left:195px;width:78px;height:46px;border-radius:50%;background:radial-gradient(ellipse,#90d840 30%,#3a9010 100%);"></div>
+  <div style="position:absolute;top:2px;right:20px;width:125px;height:65px;border-radius:50%;background:radial-gradient(ellipse,#80d840 30%,#3a9818 100%);"></div>
+  <div style="position:absolute;top:8px;right:135px;width:90px;height:52px;border-radius:50%;background:radial-gradient(ellipse,#a0e040 30%,#4aa018 100%);"></div>
+  <svg style="position:absolute;top:40px;left:0;width:100%;z-index:4;pointer-events:none;" viewBox="0 0 400 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d8d4c8"/><stop offset="50%" stop-color="#eae6da"/><stop offset="100%" stop-color="#c8c4b8"/></linearGradient>
+      <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#cac6ba"/><stop offset="50%" stop-color="#dedad0"/><stop offset="100%" stop-color="#d4d0c4"/></linearGradient>
+    </defs>
+    <rect x="0" y="52" width="400" height="9" rx="2" fill="#c8c4b8" stroke="#a8a498" stroke-width="0.8"/>
+    <rect x="0" y="53" width="400" height="3" fill="rgba(255,255,255,0.18)"/>
+    <rect x="0" y="70" width="400" height="8" rx="2" fill="#c0bcb0" stroke="#a0a098" stroke-width="0.8"/>
+    <rect x="0" y="71" width="400" height="3" fill="rgba(255,255,255,0.15)"/>
+    <g transform="rotate(-3,14,100)"><path d="M7 100 L9 4 Q12 0 14 0 Q17 0 18 4 L20 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,32,100)"><path d="M25 100 L27 3 Q30 -1 32 -1 Q35 -1 36 3 L38 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-2,50,100)"><path d="M43 100 L45 2 Q48 -2 50 -2 Q53 -2 54 2 L56 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(3,68,100)"><path d="M61 100 L63 4 Q66 0 68 0 Q71 0 72 4 L74 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-3,86,100)"><path d="M79 100 L81 2 Q84 -2 86 -2 Q89 -2 90 2 L92 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,104,100)"><path d="M97 100 L99 3 Q102 -1 104 -1 Q107 -1 108 3 L110 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-2,122,100)"><path d="M115 100 L117 2 Q120 -2 122 -2 Q125 -2 126 2 L128 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(3,140,100)"><path d="M133 100 L135 4 Q138 0 140 0 Q143 0 144 4 L146 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-3,158,100)"><path d="M151 100 L153 2 Q156 -2 158 -2 Q161 -2 162 2 L164 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,176,100)"><path d="M169 100 L171 3 Q174 -1 176 -1 Q179 -1 180 3 L182 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-2,194,100)"><path d="M187 100 L189 2 Q192 -2 194 -2 Q197 -2 198 2 L200 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(3,212,100)"><path d="M205 100 L207 4 Q210 0 212 0 Q215 0 216 4 L218 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-3,230,100)"><path d="M223 100 L225 2 Q228 -2 230 -2 Q233 -2 234 2 L236 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,248,100)"><path d="M241 100 L243 3 Q246 -1 248 -1 Q251 -1 252 3 L254 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-2,266,100)"><path d="M259 100 L261 2 Q264 -2 266 -2 Q269 -2 270 2 L272 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(3,284,100)"><path d="M277 100 L279 4 Q282 0 284 0 Q287 0 288 4 L290 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-3,302,100)"><path d="M295 100 L297 2 Q300 -2 302 -2 Q305 -2 306 2 L308 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,320,100)"><path d="M313 100 L315 3 Q318 -1 320 -1 Q323 -1 324 3 L326 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-2,338,100)"><path d="M331 100 L333 2 Q336 -2 338 -2 Q341 -2 342 2 L344 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(3,356,100)"><path d="M349 100 L351 4 Q354 0 356 0 Q359 0 360 4 L362 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(-3,374,100)"><path d="M367 100 L369 2 Q372 -2 374 -2 Q377 -2 378 2 L380 100 Z" fill="url(#wg1)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <g transform="rotate(2,392,100)"><path d="M385 100 L387 3 Q390 -1 392 -1 Q395 -1 396 3 L398 100 Z" fill="url(#wg2)" stroke="#a8a498" stroke-width="0.8"/></g>
+    <rect x="0" y="52" width="400" height="7" rx="2" fill="rgba(200,196,184,0.7)"/>
+    <rect x="0" y="70" width="400" height="6" rx="2" fill="rgba(200,196,184,0.7)"/>
+  </svg>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:42%;background:linear-gradient(180deg,#b87840 0%,#8a5220 100%);border-radius:50% 50% 0 0/10% 10% 0 0;z-index:5;"></div>
+  <div style="position:absolute;top:4px;left:6px;display:flex;gap:6px;align-items:center;z-index:9;">
+    <div id="watering-can" style="width:42px;height:44px;cursor:grab;pointer-events:all;user-select:none;">
+      <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg"><path d="M20 45 Q18 78 30 90 Q44 100 68 98 Q88 95 92 78 Q98 60 88 48 Q76 36 52 38 Q28 40 20 45 Z" fill="#8090e0" stroke="#5060c0" stroke-width="2"/><path d="M24 50 Q22 78 33 88 Q46 97 68 96 Q86 93 89 77 Q94 62 85 52 Q74 42 52 44 Q30 46 24 50 Z" fill="#9aa8f0"/><ellipse cx="45" cy="55" rx="14" ry="9" fill="rgba(255,255,255,0.35)" transform="rotate(-20 45 55)"/><path d="M88 58 Q105 50 108 40 Q106 36 100 38 Q96 48 82 54 Z" fill="#8090e0" stroke="#5060c0" stroke-width="1.5"/><path d="M38 40 Q40 20 62 22 Q78 24 76 40" stroke="#5060c0" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="50" cy="72" r="6" fill="#f080a0" stroke="#c04060" stroke-width="1"/><circle cx="44" cy="68" r="4" fill="#f080a0"/><circle cx="56" cy="68" r="4" fill="#f080a0"/><circle cx="44" cy="76" r="4" fill="#f080a0"/><circle cx="56" cy="76" r="4" fill="#f080a0"/><circle cx="50" cy="72" r="3" fill="#f8d020"/></svg>
+    </div>
+    <div id="dirt-bag" style="width:38px;height:40px;cursor:grab;pointer-events:all;user-select:none;">
+      <svg viewBox="0 0 90 95" xmlns="http://www.w3.org/2000/svg"><path d="M15 35 Q12 70 18 80 Q28 90 45 90 Q62 90 72 80 Q78 70 75 35 Z" fill="#f0e860" stroke="#c0b820" stroke-width="2"/><path d="M22 35 Q32 28 45 30 Q58 28 68 35 Q60 22 45 20 Q30 22 22 35 Z" fill="#e8d818" stroke="#c0b010" stroke-width="1.5"/><rect x="22" y="45" width="46" height="34" rx="5" fill="rgba(255,255,255,0.6)" stroke="#c0b020" stroke-width="1"/><circle cx="35" cy="58" r="5" fill="#f08020"/><circle cx="45" cy="53" r="4" fill="#f84040"/><circle cx="54" cy="60" r="4.5" fill="#f08020"/><ellipse cx="40" cy="60" rx="4" ry="5" fill="#58c030"/><ellipse cx="50" cy="59" rx="4" ry="5" fill="#58c030"/></svg>
+    </div>
+    <div style="display:flex;align-items:center;gap:2px;background:rgba(0,0,0,.18);border-radius:10px;padding:2px 7px;pointer-events:none;">
+      <span style="font-size:13px;">🪙</span><span id="coin-count" style="font-size:11px;font-weight:bold;font-family:'Courier New',monospace;color:#fff;">0</span>
+    </div>
+  </div>
+  <div id="book-btn" style="position:absolute;top:4px;right:6px;width:40px;height:48px;z-index:9;cursor:pointer;pointer-events:all;" onclick="openBookPopup()">
+    <svg viewBox="0 0 88 100" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="6" width="72" height="86" rx="5" fill="#d4a020" stroke="#a07010" stroke-width="1.5"/><rect x="8" y="6" width="10" height="86" rx="3" fill="#b08818"/><rect x="14" y="6" width="66" height="86" rx="5" fill="#f0c028" stroke="#c09018" stroke-width="1.5"/><circle cx="52" cy="38" r="7" fill="#f080c0" stroke="#c04090" stroke-width="1"/><circle cx="44" cy="32" r="6" fill="#f080c0"/><circle cx="60" cy="32" r="6" fill="#f080c0"/><circle cx="44" cy="44" r="6" fill="#f080c0"/><circle cx="60" cy="44" r="6" fill="#f080c0"/><circle cx="52" cy="38" r="5" fill="#f9d030"/><line x1="52" y1="50" x2="52" y2="62" stroke="#48a020" stroke-width="2.5" stroke-linecap="round"/><text x="20" y="82" font-size="13" font-weight="bold" fill="#a07010" font-family="monospace" id="book-count">0</text></svg>
+  </div>
+  <div id="garden-slots" style="position:absolute;bottom:38px;left:60px;right:60px;display:flex;justify-content:center;gap:20px;align-items:flex-end;pointer-events:all;z-index:10;"></div>
+</div>
+
+<div id="book-popup" style="display:none;position:fixed;inset:0;z-index:99998;align-items:center;justify-content:center;background:rgba(0,0,0,.5);" onclick="if(event.target===this)closeBookPopup()">
+  <div style="position:relative;transform:scale(0.75);transform-origin:center center;">
+    <div style="display:flex;align-items:center;justify-content:center;position:relative;height:300px;">
+      <div class="book-page-left" id="bookPageLeft" style="width:0;height:280px;overflow:hidden;border-radius:12px 0 0 12px;background:#fffef8;border:2px solid #e0d090;border-right:none;box-shadow:-4px 4px 18px rgba(0,0,0,0.15);transition:width 0.7s cubic-bezier(0.4,0,0.2,1),opacity 0.4s 0.2s;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;flex-shrink:0;z-index:25;">
+        <div id="bookPlantsLeft" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:12px 8px;height:100%;"></div>
+      </div>
+      <div style="width:18px;height:290px;background:linear-gradient(90deg,#8a6010,#e0b828,#f8d040,#e0b828,#8a6010);border-radius:4px;box-shadow:0 4px 14px rgba(0,0,0,0.22);flex-shrink:0;z-index:10;"></div>
+      <div id="bookDivider" style="position:absolute;left:50%;top:12px;width:1px;height:268px;border-left:2px dashed rgba(200,170,40,0.45);z-index:15;opacity:0;transition:opacity 0.4s 0.5s;"></div>
+      <div class="book-page-right" id="bookPageRight" style="width:0;height:280px;overflow:hidden;border-radius:0 12px 12px 0;background:#fffdf0;border:2px solid #e0d090;border-left:none;box-shadow:4px 4px 18px rgba(0,0,0,0.15);transition:width 0.7s cubic-bezier(0.4,0,0.2,1),opacity 0.4s 0.2s;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;flex-shrink:0;position:relative;">
+        <button onclick="closeBookPopup()" style="position:absolute;top:6px;right:8px;background:#f0c028;border:2px solid #c09018;border-radius:50%;width:24px;height:24px;font-size:11px;cursor:pointer;color:#7a4a00;font-weight:bold;z-index:30;line-height:1;">✕</button>
+        <div id="bookPlantsRight" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:12px 8px;height:100%;"></div>
+      </div>
+      <div id="bookCover" style="position:absolute;left:50%;top:5px;width:248px;height:280px;transform-origin:left center;transform:translateX(-9px) rotateY(0deg);transition:transform 0.75s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d;perspective:1200px;z-index:20;cursor:pointer;" onclick="toggleBookOpen()">
+        <div style="position:absolute;right:-12px;top:8px;width:12px;height:272px;background:repeating-linear-gradient(180deg,#fffde8 0,#fffde8 2px,#d8c870 2px,#d8c870 3.5px);border-radius:0 3px 3px 0;z-index:5;" id="bookEdges"></div>
+        <div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:0 12px 12px 0;overflow:hidden;">
+          <svg width="248" height="280" viewBox="0 0 248 280"><rect x="0" y="0" width="248" height="280" fill="#f0c028"/><rect x="218" y="0" width="30" height="280" fill="#c09018" opacity="0.2"/><rect x="4" y="4" width="24" height="268" rx="4" fill="rgba(255,255,255,0.14)"/><circle cx="124" cy="108" r="26" fill="#f080c0" stroke="#c04090" stroke-width="2"/><circle cx="100" cy="88" r="20" fill="#f080c0" stroke="#c04090" stroke-width="1.5"/><circle cx="148" cy="88" r="20" fill="#f080c0" stroke="#c04090" stroke-width="1.5"/><circle cx="100" cy="128" r="20" fill="#f080c0" stroke="#c04090" stroke-width="1.5"/><circle cx="148" cy="128" r="20" fill="#f080c0" stroke="#c04090" stroke-width="1.5"/><circle cx="124" cy="76" r="18" fill="#f898d0"/><circle cx="124" cy="108" r="22" fill="#faa8d8"/><circle cx="124" cy="108" r="14" fill="#f9d030"/><circle cx="118" cy="102" r="6" fill="#fce860" opacity="0.8"/><line x1="124" y1="134" x2="124" y2="176" stroke="#48a020" stroke-width="3.5" stroke-linecap="round"/><path d="M124 155 Q100 143 96 127" stroke="#48a020" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="96" cy="127" rx="18" ry="12" fill="#68c030" stroke="#3a8010" stroke-width="1.5" transform="rotate(-30 96 127)"/><path d="M124 162 Q148 150 152 134" stroke="#48a020" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="152" cy="134" rx="18" ry="12" fill="#68c030" stroke="#3a8010" stroke-width="1.5" transform="rotate(30 152 134)"/><text x="124" y="202" text-anchor="middle" font-family="'Courier New',monospace" font-size="13" fill="#7a4a00" font-weight="bold">Diario del Jardín</text><text x="124" y="218" text-anchor="middle" font-family="'Courier New',monospace" font-size="10" fill="#8a5a10">mis plantitas</text><text x="124" y="264" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="#b09030" opacity="0.8">toca para abrir</text></svg>
+        </div>
+        <div style="position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;background:#fef8e0;border:2px solid #d0c060;border-radius:12px 0 0 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;">
+          <div style="font-size:11px;color:#c09018;margin-bottom:6px;text-align:center;font-weight:bold;font-family:'Courier New',monospace;">Mi Jardín</div>
+          <div style="font-size:9px;color:#b08030;font-family:'Courier New',monospace;">plantas: <span id="book-total">0</span></div>
+        </div>
+      </div>
+      <div id="bookPagination" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-left:12px;">
+        <button id="bookPrev" onclick="bookPrevPage()" style="background:#f0c028;border:2px solid #c09018;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;color:#7a4a00;font-weight:bold;opacity:0.3;">‹</button>
+        <span id="bookPageNum" style="font-size:9px;color:#8a6020;font-family:'Courier New',monospace;writing-mode:vertical-rl;text-orientation:mixed;">1/1</span>
+        <button id="bookNext" onclick="bookNextPage()" style="background:#f0c028;border:2px solid #c09018;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;color:#7a4a00;font-weight:bold;">›</button>
+        <div style="width:1px;height:12px;background:#c8a850;opacity:.4;"></div>
+        <button onclick="bookZoomIn()" style="background:#fffef8;border:2px solid #c8a850;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;color:#8a6020;font-weight:bold;" title="Zoom +">+</button>
+        <button onclick="bookZoomOut()" style="background:#fffef8;border:2px solid #c8a850;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;color:#8a6020;font-weight:bold;" title="Zoom -">−</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="evolve-overlay" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(0,0,0,.65);" onclick="if(event.target===this)document.getElementById('evolve-overlay').style.display='none'">
+  <div style="position:relative;background:linear-gradient(135deg,#1a0a2e,#0a1a0a);border-radius:20px;border:3px solid #f0c028;padding:24px 20px 16px;text-align:center;box-shadow:0 0 40px rgba(240,192,40,.4);">
+    <div id="evolve-title" style="font-size:12px;font-weight:bold;color:#f0c028;font-family:'Courier New',monospace;margin-bottom:4px;letter-spacing:2px;"></div>
+    <div id="evolve-subtitle" style="font-size:9px;color:#a0c8a0;font-family:'Courier New',monospace;margin-bottom:12px;"></div>
+    <div id="evolve-plant" style="display:flex;justify-content:center;align-items:flex-end;min-height:160px;"></div>
+    <div id="evolve-desc" style="font-size:8px;color:#c8e8c8;font-family:'Courier New',monospace;margin-top:10px;line-height:1.6;max-width:200px;"></div>
+    <button onclick="document.getElementById('evolve-overlay').style.display='none'" style="margin-top:12px;padding:5px 18px;background:#f0c028;color:#1a0a2e;border:none;border-radius:10px;font-size:9px;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;">Cerrar</button>
+  </div>
+</div>
 
 <script>
 const vscode = acquireVsCodeApi();
@@ -172,6 +285,70 @@ const SEED_FACE_IDLE    = `<circle cx="77" cy="165" r="1.6" fill="#3a3a3a"/><cir
 function getSeedFace(mood) { return mood==='sleep'?SEED_FACE_SLEEP:mood==='happy'?SEED_FACE_HAPPY:mood==='watered'?SEED_FACE_WATERED:SEED_FACE_IDLE; }
 function getFlowerFace(mood) { return mood==='sleep'?FACE_SLEEP:mood==='happy'?FACE_HAPPY:mood==='watered'?FACE_WATERED:mood==='love'?FACE_LOVE:FACE_IDLE; }
 
+const ALIEN_EYE_OPEN  = `<g class="alien-eye"><ellipse cx="68" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><circle cx="68" cy="57" r="1.5" fill="#333"/><circle cx="67" cy="56" r=".6" fill="white"/></g><g class="alien-eye"><ellipse cx="92" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><circle cx="92" cy="57" r="1.5" fill="#333"/><circle cx="91" cy="56" r=".6" fill="white"/></g>`;
+const ALIEN_EYE_SLEEP = `<path d="M63 57 Q68 61 73 57" stroke="#333" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M87 57 Q92 61 97 57" stroke="#333" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+const ALIEN_EYE_HAPPY = `<g class="alien-eye"><ellipse cx="68" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><path d="M63 55 Q68 51 73 55" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="68" cy="58" r="1.5" fill="#333"/></g><g class="alien-eye"><ellipse cx="92" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><path d="M87 55 Q92 51 97 55" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="92" cy="58" r="1.5" fill="#333"/></g>`;
+const ALIEN_MOUTH_SMILE   = `<path d="M72 88 Q80 94 88 88 Q88 92 80 94 Q72 92 72 88Z" fill="#E95A79" stroke="#333" stroke-width="1"/><path d="M75 89 Q80 92 85 89 Q85 91 80 92 Q75 91 75 89Z" fill="white" opacity=".9"/>`;
+const ALIEN_MOUTH_SLEEP   = `<path d="M76 90 Q80 92 84 90" stroke="#333" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+const ALIEN_MOUTH_WATERED = `<path d="M70 87 Q80 97 90 87 Q90 93 80 96 Q70 93 70 87Z" fill="#E95A79" stroke="#333" stroke-width="1"/><path d="M74 89 Q80 94 86 89 Q86 92 80 94 Q74 92 74 89Z" fill="white" opacity=".9"/>`;
+function getAlienFace(mood) {
+  const eyes  = mood==='sleep' ? ALIEN_EYE_SLEEP : mood==='happy'||mood==='love'||mood==='watered' ? ALIEN_EYE_HAPPY : ALIEN_EYE_OPEN;
+  const mouth = mood==='sleep' ? ALIEN_MOUTH_SLEEP : mood==='watered'||mood==='love' ? ALIEN_MOUTH_WATERED : ALIEN_MOUTH_SMILE;
+  return eyes + mouth;
+}
+
+var _alienBlinkTimer = null;
+function startAlienBlink() {  clearTimeout(_alienBlinkTimer);
+  function closeEye(el) {
+    if (!el) return;
+    el.style.transform = 'scaleY(0.08)';
+    el.style.transformBox = 'fill-box';
+    el.style.transformOrigin = 'center';
+    el.style.transition = 'transform .08s';
+  }
+  function openEye(el) {
+    if (!el) return;
+    el.style.transform = 'scaleY(1)';
+    el.style.transition = 'transform .1s';
+  }
+  function doBlink() {
+    var wrap = document.getElementById('plant-wrap');
+    if (!wrap) return;
+    var eyes = wrap.querySelectorAll('.alien-eye');
+    if (eyes.length < 2) return;
+    var L = eyes[0], R = eyes[1];
+    closeEye(L);
+    setTimeout(function(){ openEye(L); closeEye(R); }, 120);
+    setTimeout(function(){ openEye(R); }, 240);
+    setTimeout(function(){ closeEye(L); closeEye(R); }, 380);
+    setTimeout(function(){ openEye(L); openEye(R); }, 500);
+    _alienBlinkTimer = setTimeout(doBlink, 3000 + Math.random()*2000);
+  }
+  _alienBlinkTimer = setTimeout(doBlink, 1500);
+}
+
+var _cactusBlinkTimer = null;
+function startCactusBlink() {
+  clearTimeout(_cactusBlinkTimer);
+  function doBlink() {
+    var wrap = document.getElementById('plant-wrap');
+    if (!wrap) return;
+    var face = wrap.querySelector('#plant-face');
+    if (!face) return;
+    var eyes = face.querySelectorAll('circle[r="2.2"],circle[r="2.5"],circle[r="3.5"]');
+    var eyeArr = Array.from(eyes).filter(function(c){
+      var cy = parseFloat(c.getAttribute('cy'));
+      return cy > 35 && cy < 45;
+    });
+    eyeArr.forEach(function(e){ e.style.transform='scaleY(0.08)'; e.style.transformBox='fill-box'; e.style.transformOrigin='center'; e.style.transition='transform .08s'; });
+    setTimeout(function(){
+      eyeArr.forEach(function(e){ e.style.transform='scaleY(1)'; e.style.transition='transform .1s'; });
+      _cactusBlinkTimer = setTimeout(doBlink, 2500 + Math.random()*2500);
+    }, 120);
+  }
+  _cactusBlinkTimer = setTimeout(doBlink, 1200);
+}
+
 function buildRoseSVG(stage, face) {
   const s = Math.min(stage, 4);
   const base = `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">${DEFS}${POT}`;
@@ -182,36 +359,42 @@ function buildRoseSVG(stage, face) {
   return base + `<path d="M80 172 Q77 140 80 75" stroke="#1a6e1a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 172 Q83 140 80 75" stroke="#2d8a2d" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/><path d="M80 158 Q50 144 38 124 Q56 128 80 154Z" fill="url(#leafG)"/><path d="M80 158 Q110 144 122 124 Q104 128 80 154Z" fill="url(#leafG)"/><path d="M80 132 Q54 118 44 100 Q62 104 80 128Z" fill="url(#leafG2)"/><path d="M80 132 Q106 118 116 100 Q98 104 80 128Z" fill="url(#leafG2)"/><ellipse cx="80" cy="28" rx="11" ry="17" fill="#9d174d" opacity=".5"/><ellipse cx="80" cy="56" rx="11" ry="17" fill="#9d174d" opacity=".5"/><ellipse cx="56" cy="42" rx="17" ry="11" fill="#9d174d" opacity=".5"/><ellipse cx="104" cy="42" rx="17" ry="11" fill="#9d174d" opacity=".5"/><ellipse cx="64" cy="28" rx="11" ry="16" fill="#9d174d" opacity=".5" transform="rotate(-40 64 28)"/><ellipse cx="96" cy="28" rx="11" ry="16" fill="#9d174d" opacity=".5" transform="rotate(40 96 28)"/><ellipse cx="64" cy="56" rx="11" ry="16" fill="#9d174d" opacity=".5" transform="rotate(40 64 56)"/><ellipse cx="96" cy="56" rx="11" ry="16" fill="#9d174d" opacity=".5" transform="rotate(-40 96 56)"/><ellipse cx="80" cy="26" rx="12" ry="18" fill="url(#petalG)" filter="url(#softglow)"/><ellipse cx="80" cy="58" rx="12" ry="18" fill="url(#petalG)" filter="url(#softglow)"/><ellipse cx="54" cy="42" rx="18" ry="12" fill="url(#petalG)" filter="url(#softglow)"/><ellipse cx="106" cy="42" rx="18" ry="12" fill="url(#petalG)" filter="url(#softglow)"/><ellipse cx="63" cy="27" rx="12" ry="17" fill="url(#petalG)" transform="rotate(-40 63 27)" filter="url(#softglow)"/><ellipse cx="97" cy="27" rx="12" ry="17" fill="url(#petalG)" transform="rotate(40 97 27)" filter="url(#softglow)"/><ellipse cx="63" cy="57" rx="12" ry="17" fill="url(#petalG)" transform="rotate(40 63 57)" filter="url(#softglow)"/><ellipse cx="97" cy="57" rx="12" ry="17" fill="url(#petalG)" transform="rotate(-40 97 57)" filter="url(#softglow)"/><circle cx="80" cy="42" r="16" fill="#d97706"/><circle cx="80" cy="42" r="14" fill="url(#centerG)" filter="url(#softglow)"/><g id="plant-face">${face||FACE_IDLE}</g></svg>`;
 }
 
-const CACTUS_POT = `<rect x="52" y="188" width="56" height="4" rx="2" fill="#000" opacity=".2"/><rect x="44" y="172" width="72" height="36" rx="8" fill="#b5c830" stroke="#8fa020" stroke-width="1.5"/><rect x="40" y="164" width="80" height="14" rx="6" fill="#cce040" stroke="#9ab828" stroke-width="1.5"/><ellipse cx="80" cy="172" rx="32" ry="6" fill="#7a4e2a"/><ellipse cx="80" cy="170" rx="30" ry="5" fill="#8b5a30"/>`;
+const CACTUS_POT = ``;
 
-function buildKawaiiCactus(stage) {
+function buildKawaiiCactus(stage, face) {
   const s = Math.min(stage, 4);
-  const base = `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">${CACTUS_POT}`;
-  if (s === 0) return base + `<ellipse cx="80" cy="166" rx="7" ry="5" fill="#c8a850"/><ellipse cx="78" cy="164" rx="3" ry="2" fill="#e8c870" opacity=".7"/></svg>`;
-  if (s === 1) return base + `<rect x="74" y="148" width="12" height="22" rx="4" fill="#3a9a30" stroke="#2a7a22" stroke-width="1"/><line x1="70" y1="158" x2="65" y2="155" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="90" y1="155" x2="95" y2="152" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="80" cy="162" rx="4" ry="3" fill="#f09090" opacity=".5"/><circle cx="77" cy="155" r="1.5" fill="#1a1a1a"/><circle cx="83" cy="155" r="1.5" fill="#1a1a1a"/><path d="M78 159 Q80 161 82 159" stroke="#c0404a" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`;
-  if (s === 2) return base + `<rect x="72" y="110" width="16" height="60" rx="5" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M72 135 Q58 130 56 118 Q54 108 62 106 Q70 104 71 116" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><line x1="68" y1="112" x2="62" y2="109" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="66" y1="120" x2="60" y2="120" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="74" y1="118" x2="68" y2="115" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="86" y1="118" x2="92" y2="115" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="80" cy="125" rx="6" ry="5" fill="#f09090" opacity=".5"/><circle cx="76" cy="118" r="2" fill="#1a1a1a"/><circle cx="84" cy="118" r="2" fill="#1a1a1a"/><circle cx="75" cy="117" r=".7" fill="white"/><circle cx="83" cy="117" r=".7" fill="white"/><path d="M77 123 Q80 126 83 123" stroke="#c0404a" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>`;
-  if (s === 3) return base + `<rect x="70" y="90" width="20" height="80" rx="6" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M70 120 Q52 112 50 96 Q48 82 58 80 Q68 78 69 94" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M90 110 Q108 100 110 86 Q112 74 102 72 Q92 70 91 84" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><line x1="62" y1="86" x2="56" y2="82" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="60" y1="94" x2="53" y2="93" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="98" y1="78" x2="104" y2="74" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="100" y1="86" x2="107" y2="85" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="71" y1="98" x2="65" y2="95" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="89" y1="98" x2="95" y2="95" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="80" cy="108" rx="7" ry="6" fill="#f09090" opacity=".55"/><circle cx="75" cy="100" r="2.5" fill="#1a1a1a"/><circle cx="85" cy="100" r="2.5" fill="#1a1a1a"/><circle cx="74" cy="99" r=".8" fill="white"/><circle cx="84" cy="99" r=".8" fill="white"/><path d="M76 106 Q80 110 84 106" stroke="#c0404a" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`;
-  return base + `<rect x="68" y="75" width="24" height="95" rx="7" fill="#3a9a30" stroke="#2a7a22" stroke-width="2"/><path d="M68 108 Q46 98 44 78 Q42 60 54 57 Q66 54 67 72" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.8"/><path d="M92 96 Q114 84 116 64 Q118 46 106 44 Q94 42 93 60" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.8"/><line x1="56" y1="64" x2="49" y2="60" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="53" y1="74" x2="46" y2="73" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="54" y1="84" x2="47" y2="86" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="104" y1="52" x2="111" y2="48" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="107" y1="62" x2="114" y2="61" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="106" y1="72" x2="113" y2="74" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="69" y1="84" x2="62" y2="81" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="91" y1="84" x2="98" y2="81" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="69" y1="100" x2="62" y2="98" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="91" y1="100" x2="98" y2="98" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="80" cy="96" rx="9" ry="7" fill="#f09090" opacity=".55"/><circle cx="74" cy="87" r="3.5" fill="#1a1a1a"/><circle cx="86" cy="87" r="3.5" fill="#1a1a1a"/><circle cx="73" cy="86" r="1.2" fill="white"/><circle cx="85" cy="86" r="1.2" fill="white"/><path d="M75 94 Q80 99 85 94" stroke="#c0404a" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="68" cy="97" rx="5" ry="3" fill="#f09090" opacity=".5"/><ellipse cx="92" cy="97" rx="5" ry="3" fill="#f09090" opacity=".5"/></svg>`;
+  const base = `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">${DEFS}${POT}`;
+  const CFACE = face || FACE_IDLE;
+  const trunk = `<rect x="72" y="75" width="24" height="103" rx="7" fill="#3a9a30" stroke="#2a7a22" stroke-width="2"/>`;
+  const spines = `<line x1="69" y1="100" x2="62" y2="97" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="69" y1="115" x2="62" y2="113" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="69" y1="130" x2="62" y2="128" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="91" y1="100" x2="98" y2="97" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="91" y1="115" x2="98" y2="113" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="91" y1="130" x2="98" y2="128" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/>`;
+  const faceGroup = `<g id="plant-face" transform="translate(0,55)">${CFACE}</g>`;
+  if (s === 0) return base + `<ellipse cx="80" cy="172" rx="7" ry="5" fill="#c8a850"/><ellipse cx="78" cy="170" rx="3" ry="2" fill="#e8c870" opacity=".7"/></svg>`;
+  if (s === 1) return base + `<rect x="74" y="148" width="12" height="24" rx="4" fill="#3a9a30" stroke="#2a7a22" stroke-width="1"/><line x1="70" y1="158" x2="65" y2="155" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="90" y1="155" x2="95" y2="152" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  if (s === 2) return base + `<rect x="73" y="115" width="14" height="57" rx="5" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M73 138 Q60 132 58 120 Q56 110 64 108 Q72 106 73 118" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><line x1="65" y1="114" x2="59" y2="111" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="64" y1="122" x2="58" y2="122" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  if (s === 3) return base + `<rect x="72" y="95" width="16" height="77" rx="6" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M72 122 Q55 114 53 100 Q51 87 61 85 Q71 83 72 97" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><path d="M88 112 Q105 103 107 89 Q109 77 99 75 Q89 73 88 87" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.5"/><line x1="63" y1="91" x2="57" y2="87" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="61" y1="100" x2="54" y2="99" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="97" y1="81" x2="103" y2="77" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><line x1="99" y1="90" x2="106" y2="89" stroke="#e8f8e0" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="80" cy="110" rx="7" ry="5" fill="#f09090" opacity=".5"/>${faceGroup}</svg>`;
+  return base + trunk + `<path d="M72 108 Q50 98 48 78 Q46 60 58 57 Q70 54 71 72" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.8"/><path d="M96 96 Q118 84 120 64 Q122 46 110 44 Q98 42 97 60" fill="#3a9a30" stroke="#2a7a22" stroke-width="1.8"/>` + spines + `<line x1="56" y1="64" x2="49" y2="60" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="53" y1="74" x2="46" y2="73" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="108" y1="52" x2="115" y2="48" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><line x1="111" y1="62" x2="118" y2="61" stroke="#e8f8e0" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="80" cy="100" rx="9" ry="6" fill="#f09090" opacity=".5"/>${faceGroup}</svg>`;
 }
 
-function buildDaisySVG(stage) {
+function buildDaisySVG(stage, face) {
   const s = Math.min(stage, 4);
   const base = `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">${DEFS}${POT}`;
   if (s === 0) return base + `<ellipse cx="80" cy="172" rx="7" ry="5" fill="#c8a850"/><ellipse cx="78" cy="170" rx="3" ry="2" fill="#e8c870" opacity=".7"/></svg>`;
   if (s === 1) return base + `<path d="M80 172 Q79 158 80 148" stroke="#6a9a40" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M80 162 Q70 156 67 148 Q74 150 80 160Z" fill="#6a9a40"/></svg>`;
   if (s === 2) return base + `<path d="M80 172 Q78 148 80 120" stroke="#6a9a40" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 158 Q64 150 60 138 Q70 140 80 155Z" fill="#6a9a40"/><path d="M80 158 Q96 150 100 138 Q90 140 80 155Z" fill="#6a9a40"/><circle cx="80" cy="118" r="10" fill="#f5b800"/></svg>`;
   if (s === 3) return base + `<path d="M80 172 Q77 142 80 100" stroke="#6a9a40" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 155 Q60 145 55 130 Q68 133 80 150Z" fill="#6a9a40"/><path d="M80 155 Q100 145 105 130 Q92 133 80 150Z" fill="#6a9a40"/><g transform="translate(80,98)"><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(0)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(45)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(90)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(135)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(180)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(225)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(270)"/><ellipse cx="0" cy="-18" rx="5" ry="16" fill="#f5f0e8" transform="rotate(315)"/><circle cx="0" cy="0" r="12" fill="#f5b800"/></g></svg>`;
-  return base + `<path d="M80 172 Q77 140 80 88" stroke="#6a9a40" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 155 Q58 143 52 126 Q66 130 80 150Z" fill="#6a9a40"/><path d="M80 155 Q102 143 108 126 Q94 130 80 150Z" fill="#6a9a40"/><path d="M80 130 Q62 122 58 108 Q70 112 80 127Z" fill="#6a9a40"/><path d="M80 130 Q98 122 102 108 Q90 112 80 127Z" fill="#6a9a40"/><g transform="translate(80,86)"><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(0)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(36)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(108)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(180)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(252)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(288)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(324)"/><circle cx="0" cy="0" r="16" fill="#c87800" stroke="#9a5800" stroke-width="1"/><circle cx="0" cy="0" r="13" fill="#f9cc30"/><ellipse cx="-5" cy="-4" rx="4" ry="3" fill="#fde878" opacity=".6"/><circle cx="-5" cy="-2" r="2.5" fill="#1a1200"/><circle cx="5" cy="-2" r="2.5" fill="#1a1200"/><circle cx="-6" cy="-3" r=".8" fill="white"/><circle cx="4" cy="-3" r=".8" fill="white"/><ellipse cx="-9" cy="4" rx="4" ry="2.5" fill="#f09090" opacity=".55"/><ellipse cx="9" cy="4" rx="4" ry="2.5" fill="#f09090" opacity=".55"/><path d="M-6 5 Q0 10 6 5" stroke="#c04040" stroke-width="1.5" fill="none" stroke-linecap="round"/></g></svg>`;
+  const dFace = face || FACE_IDLE;
+  return base + `<path d="M80 172 Q77 140 80 88" stroke="#6a9a40" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 155 Q58 143 52 126 Q66 130 80 150Z" fill="#6a9a40"/><path d="M80 155 Q102 143 108 126 Q94 130 80 150Z" fill="#6a9a40"/><path d="M80 130 Q62 122 58 108 Q70 112 80 127Z" fill="#6a9a40"/><path d="M80 130 Q98 122 102 108 Q90 112 80 127Z" fill="#6a9a40"/><g transform="translate(80,86)"><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(0)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(36)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(108)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(180)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(252)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(288)"/><ellipse cx="0" cy="-22" rx="6" ry="20" fill="#f5f0e8" stroke="#d8cfc0" stroke-width=".8" transform="rotate(324)"/><circle cx="0" cy="0" r="16" fill="#c87800" stroke="#9a5800" stroke-width="1"/><circle cx="0" cy="0" r="13" fill="#f9cc30"/><ellipse cx="-5" cy="-4" rx="4" ry="3" fill="#fde878" opacity=".6"/></g><g id="plant-face" transform="translate(0,47)">${dFace}</g></svg>`;
 }
 
-function buildAlienSVG(stage) {
+function buildAlienSVG(stage, face) {
   const s = Math.min(stage, 4);
   const base = `<svg width="160" height="215" viewBox="0 0 160 215" xmlns="http://www.w3.org/2000/svg">${DEFS}${POT}`;
   if (s === 0) return base + `<ellipse cx="80" cy="172" rx="7" ry="5" fill="#76D178"/><ellipse cx="78" cy="170" rx="3" ry="2" fill="#99E99B" opacity=".7"/></svg>`;
   if (s === 1) return base + `<path d="M80 172 Q79 158 80 148" stroke="#76D178" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="144" rx="8" ry="8" fill="#FFEE81" stroke="#333" stroke-width="1"/><circle cx="78" cy="143" r="1.5" fill="#333"/><circle cx="82" cy="143" r="1.5" fill="#333"/></svg>`;
   if (s === 2) return base + `<path d="M80 172 Q78 150 80 120" stroke="#76D178" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M80 148 Q68 148 65 140 Q68 148 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 148 Q92 148 95 140 Q92 148 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 120 Q60 120 55 108 Q60 115 80 118Z" fill="#FFEE81" stroke="#333" stroke-width="1"/><path d="M80 120 Q100 120 105 108 Q100 115 80 118Z" fill="#FFEE81" stroke="#333" stroke-width="1"/><ellipse cx="80" cy="112" rx="14" ry="10" fill="#99E99B" stroke="#333" stroke-width="1"/></svg>`;
   if (s === 3) return base + `<path d="M80 172 Q77 145 80 100" stroke="#76D178" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 148 Q62 142 58 130 Q70 134 80 145Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 148 Q98 142 102 130 Q90 134 80 145Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 100 Q55 95 50 80 Q60 88 80 97Z" fill="#FFEE81" stroke="#333" stroke-width="1"/><path d="M80 100 Q105 95 110 80 Q100 88 80 97Z" fill="#FFEE81" stroke="#333" stroke-width="1"/><ellipse cx="80" cy="92" rx="18" ry="14" fill="#99E99B" stroke="#333" stroke-width="1.5"/><circle cx="74" cy="90" r="3" fill="#333"/><circle cx="86" cy="90" r="3" fill="#333"/><circle cx="73" cy="89" r="1" fill="white"/><circle cx="85" cy="89" r="1" fill="white"/></svg>`;
-  return base + `<path d="M80 172 Q77 142 80 95" stroke="#76D178" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 152 Q60 144 55 130 Q68 134 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 152 Q100 144 105 130 Q92 134 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 95 Q52 88 46 72 Q58 80 80 92Z" fill="#FFEE81" stroke="#333" stroke-width="1.5"/><path d="M80 95 Q108 88 114 72 Q102 80 80 92Z" fill="#FFEE81" stroke="#333" stroke-width="1.5"/><path d="M80 95 Q60 88 56 76 Q62 84 80 92Z" fill="#99E99B" stroke="#333" stroke-width="1"/><path d="M80 95 Q100 88 104 76 Q98 84 80 92Z" fill="#99E99B" stroke="#333" stroke-width="1"/><ellipse cx="80" cy="84" rx="22" ry="18" fill="#99E99B" stroke="#333" stroke-width="2"/><line x1="68" y1="68" x2="68" y2="60" stroke="#76D178" stroke-width="2" stroke-linecap="round"/><ellipse cx="68" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><circle cx="68" cy="57" r="1.5" fill="#333"/><circle cx="67" cy="56" r=".6" fill="white"/><line x1="92" y1="68" x2="92" y2="60" stroke="#76D178" stroke-width="2" stroke-linecap="round"/><ellipse cx="92" cy="57" rx="5" ry="5" fill="#f0f0f0" stroke="#333" stroke-width="1"/><circle cx="92" cy="57" r="1.5" fill="#333"/><circle cx="91" cy="56" r=".6" fill="white"/><path d="M72 88 Q80 94 88 88 Q88 92 80 94 Q72 92 72 88Z" fill="#E95A79" stroke="#333" stroke-width="1"/><path d="M75 89 Q80 92 85 89 Q85 91 80 92 Q75 91 75 89Z" fill="white" opacity=".9"/></svg>`;
+  const aFace = face ? getAlienFace(face) : getAlienFace('idle');
+  return base + `<path d="M80 172 Q77 142 80 95" stroke="#76D178" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 152 Q60 144 55 130 Q68 134 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 152 Q100 144 105 130 Q92 134 80 148Z" fill="#76D178" stroke="#333" stroke-width="1"/><path d="M80 95 Q52 88 46 72 Q58 80 80 92Z" fill="#FFEE81" stroke="#333" stroke-width="1.5"/><path d="M80 95 Q108 88 114 72 Q102 80 80 92Z" fill="#FFEE81" stroke="#333" stroke-width="1.5"/><path d="M80 95 Q60 88 56 76 Q62 84 80 92Z" fill="#99E99B" stroke="#333" stroke-width="1"/><path d="M80 95 Q100 88 104 76 Q98 84 80 92Z" fill="#99E99B" stroke="#333" stroke-width="1"/><ellipse cx="80" cy="84" rx="22" ry="18" fill="#99E99B" stroke="#333" stroke-width="2"/><line x1="68" y1="68" x2="68" y2="60" stroke="#76D178" stroke-width="2" stroke-linecap="round"/><line x1="92" y1="68" x2="92" y2="60" stroke="#76D178" stroke-width="2" stroke-linecap="round"/><g id="plant-face">${aFace}</g></svg>`;
 }
 
 let currentStage = -1, currentMood = 'sleep';
@@ -230,10 +413,74 @@ let gardenState = vscode.getState()?.garden || { usedBoxes:[false,false,false] }
 gardenState._boxOpened = false;
 gardenState._boxPlant = null;
 gardenState._autoCollected = false;
+gardenState.usedBoxIds = [];
 if (!gardenState.usedBoxes) gardenState.usedBoxes = [false,false,false];
+if (!gardenState.totalCompleted) gardenState.totalCompleted = 0;
+if (!gardenState.usedBoxIds) gardenState.usedBoxIds = [];
 function saveGarden() { vscode.setState({ ...(vscode.getState()||{}), garden: gardenState }); }
+setTimeout(function(){
+  var bc=document.getElementById('book-count'); if(bc) bc.textContent=gardenState.totalCompleted||0;
+  (gardenState.usedBoxIds||[]).forEach(function(id){
+    var btn=document.getElementById(id);
+    var cube=btn&&btn.querySelector('[id^="cube-"]');
+    if(btn){ btn.style.pointerEvents='none'; btn.style.opacity='0.45'; btn.style.cursor='default'; }
+    if(cube){ cube.style.animation='none'; cube.style.filter='grayscale(1) brightness(.6)'; }
+  });
+},200);
+
+var coins = 0;
+function addCoin(fromEl) {  var coin = document.createElement('div');
+  coin.textContent = '🪙';
+  coin.style.cssText = 'position:fixed;font-size:20px;pointer-events:none;z-index:99999;transition:none;';
+  var fr = fromEl ? fromEl.getBoundingClientRect() : {left: window.innerWidth/2, top: window.innerHeight*0.8, width:0, height:0};
+  var startX = fr.left + fr.width/2 - 10;
+  var startY = fr.top  + fr.height/2 - 10;
+  coin.style.left = startX + 'px';
+  coin.style.top  = startY + 'px';
+  document.body.appendChild(coin);
+  var counter = document.getElementById('coin-count');
+  var tr = counter ? counter.getBoundingClientRect() : {left: window.innerWidth/2, top: 0, width:0, height:0};
+  var endX = tr.left + tr.width/2 - 10;
+  var endY = tr.top  + tr.height/2 - 10;
+  requestAnimationFrame(function(){
+    coin.style.transition = 'left .6s cubic-bezier(.4,0,.2,1), top .6s cubic-bezier(.4,0,.2,1), transform .6s, opacity .2s .5s';
+    coin.style.left = endX + 'px';
+    coin.style.top  = endY + 'px';
+    coin.style.transform = 'scale(.6)';
+  });
+  setTimeout(function(){
+    coin.remove();
+    coins++;
+    if (counter) {
+      counter.textContent = coins;
+      counter.style.transition = 'transform .15s';
+      counter.style.transform = 'scale(1.6)';
+      setTimeout(function(){ counter.style.transform = 'scale(1)'; }, 150);
+    }
+  }, 620);
+}
 
 function openBox(btnId, cubeId, emoji, plantType) {
+  if (gardenState.usedBoxIds && gardenState.usedBoxIds.indexOf(btnId) !== -1) return;
+  if (currentStage === 4 && !gardenState._autoCollected) {
+    gardenState._autoCollected = true;
+    saveGarden();
+    var wrap = document.getElementById('plant-wrap');
+    var gardenRow = document.getElementById('garden-slots');
+    if (gardenRow.querySelectorAll('.garden-plant').length < 3) {
+      var gItem = document.createElement('div'); gItem.className = 'garden-plant';
+      var gPw = document.createElement('div'); gPw.className = 'garden-plant-wrap';
+      gPw.innerHTML = wrap.innerHTML.replace('width="160" height="215"','width="75" height="100"');
+      var gLbl = document.createElement('div'); gLbl.className = 'garden-plant-label';
+      gItem.appendChild(gPw); gItem.appendChild(gLbl); gardenRow.appendChild(gItem);
+      startGardenLife(gItem);
+    }
+    if (!gardenState.totalCompleted) gardenState.totalCompleted = 0;
+    gardenState.totalCompleted++;
+    saveGarden();
+    var bookCount = document.getElementById('book-count');
+    if (bookCount) bookCount.textContent = gardenState.totalCompleted;
+  }
   var cube = document.getElementById(cubeId);
   var btn  = document.getElementById(btnId);
   btn.style.pointerEvents = 'none';
@@ -255,17 +502,17 @@ function openBox(btnId, cubeId, emoji, plantType) {
     setTimeout(function() {
       var wrap = document.getElementById('plant-wrap');
       if (plantType === 'cactus') {
-        wrap.innerHTML = buildKawaiiCactus(0);
+        wrap.innerHTML = buildKawaiiCactus(0, getSeedFace('idle'));
         wrap.style.filter = 'drop-shadow(0 0 16px #4a9a2a)';
         gardenState._boxOpened = true;
         gardenState._boxPlant  = null;
       } else if (plantType === 'daisy') {
-        wrap.innerHTML = buildDaisySVG(0);
+        wrap.innerHTML = buildDaisySVG(0, getSeedFace('idle'));
         wrap.style.filter = 'drop-shadow(0 0 16px #f5b800)';
         gardenState._boxOpened = false;
         gardenState._boxPlant  = 'daisy';
       } else {
-        wrap.innerHTML = buildAlienSVG(0);
+        wrap.innerHTML = buildAlienSVG(0, 'idle');
         wrap.style.filter = 'drop-shadow(0 0 16px #76D178)';
         gardenState._boxOpened = false;
         gardenState._boxPlant  = 'alien';
@@ -274,13 +521,18 @@ function openBox(btnId, cubeId, emoji, plantType) {
       wrap.classList.add('anim-breathe');
       gardenState._autoCollected = false;
       currentStage = 0;
+      if (!gardenState.usedBoxIds) gardenState.usedBoxIds = [];
+      gardenState.usedBoxIds.push(btnId);
       saveGarden();
       setTimeout(function() {
         cube.style.transition = 'none';
         cube.style.transform  = '';
         cube.style.opacity    = '1';
-        cube.style.animation  = 'spinBox 5s linear infinite,floatBox 2s ease-in-out infinite';
-        btn.style.pointerEvents = '';
+        cube.style.animation  = 'none';
+        cube.style.filter     = 'grayscale(1) brightness(.6)';
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.45';
+        btn.style.cursor  = 'default';
       }, 800);
     }, 500);
   }, 150);
@@ -292,7 +544,54 @@ function startGardenLife(item) {
   var needTimer = null;
   var zzzInt = null;
   var currentNeed = null;
-  var needs = ['💧','🪱','🤗','💧','💧'];
+  var needs = ['💧','🌱','🤗','💧','💧'];
+
+  function setFaceExpression(expr) {
+    var pw = item.querySelector('.garden-plant-wrap');
+    if (!pw) return;
+    var svg = pw.querySelector('svg');
+    if (!svg) return;
+    svg.querySelectorAll('.g-face-overlay').forEach(function(e){ e.remove(); });
+    if (expr === 'cry') {
+      var vb = (svg.getAttribute('viewBox')||'0 0 75 100').split(' ');
+      var vw = parseFloat(vb[2])||75, vh = parseFloat(vb[3])||100;
+      var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('class','g-face-overlay');
+      var cx = vw*0.5, cy = vh*0.22, r = vw*0.07;
+      [[cx-r*1.1, cy+r*1.0],[cx+r*1.1, cy+r*1.0]].forEach(function(pos){
+        var d = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+        d.setAttribute('cx',pos[0]); d.setAttribute('cy',pos[1]);
+        d.setAttribute('rx',r*0.3); d.setAttribute('ry',r*0.65);
+        d.setAttribute('fill','#60c8ff'); d.setAttribute('opacity','.9');
+        g.appendChild(d);
+      });
+      svg.appendChild(g);
+    } else if (expr === 'happy') {
+      pw.style.animation = 'gardenShake .5s ease-in-out';
+      setTimeout(function(){ pw.style.animation = 'breathe 5s ease-in-out infinite'; }, 520);
+      animateMouthHappy(svg);
+    }
+  }
+
+  function animateMouthHappy(svg) {
+    var mouths = [];
+    svg.querySelectorAll('path').forEach(function(p) {
+      var d = p.getAttribute('d') || '';
+      var fill = p.getAttribute('fill') || '';
+      var stroke = p.getAttribute('stroke') || '';
+      if (fill === 'none' && stroke && d.indexOf('Q') !== -1) mouths.push(p);
+    });
+    if (!mouths.length) return;
+    var mouth = mouths[mouths.length - 1];
+    var orig = mouth.getAttribute('d');
+    var vb = (svg.getAttribute('viewBox')||'0 0 75 100').split(' ');
+    var vw = parseFloat(vb[2])||75, vh = parseFloat(vb[3])||100;
+    var cx = vw*0.5, cy = vh*0.22, r = vw*0.12;
+    var bigSmile = 'M'+(cx-r*1.2)+' '+(cy+r*1.0)+' Q'+cx+' '+(cy+r*2.8)+' '+(cx+r*1.2)+' '+(cy+r*1.0);
+    mouth.setAttribute('d', bigSmile);
+    mouth.setAttribute('stroke-width','2.5');
+    setTimeout(function(){ mouth.setAttribute('d', orig); mouth.setAttribute('stroke-width',''); }, 1800);
+  }
 
   function closeSvgEyes(pw) {
     var svg = pw.querySelector('svg');
@@ -304,10 +603,8 @@ function startGardenLife(item) {
       if (r >= 1.8 && r <= 3.5 && cy > 30 && cy < 55) {
         var arc = document.createElementNS('http://www.w3.org/2000/svg','path');
         arc.setAttribute('d','M'+(cx-r)+' '+cy+' Q'+cx+' '+(cy+r*1.4)+' '+(cx+r)+' '+cy);
-        arc.setAttribute('stroke','#3a3a3a');
-        arc.setAttribute('stroke-width','2');
-        arc.setAttribute('fill','none');
-        arc.setAttribute('stroke-linecap','round');
+        arc.setAttribute('stroke','#3a3a3a'); arc.setAttribute('stroke-width','2');
+        arc.setAttribute('fill','none'); arc.setAttribute('stroke-linecap','round');
         arc.setAttribute('class','sleep-eye');
         c.parentNode.insertBefore(arc, c.nextSibling);
         c.style.display = 'none';
@@ -340,8 +637,8 @@ function startGardenLife(item) {
       pw.style.filter = 'brightness(.85)';
       closeSvgEyes(pw);
     }
-    zzzInt = setInterval(spawnZzz, 900);
-  }
+    setFaceExpression('sleep');
+    zzzInt = setInterval(spawnZzz, 900);  }
 
   function wakeUp() {
     sleeping = false;
@@ -365,20 +662,28 @@ function startGardenLife(item) {
     item.appendChild(n);
     currentNeed = n;
     item._needsWater = (emoji === '💧');
+    item._needsDirt  = (emoji === '🌱');
     if (sleeping) wakeUp();
-    if (emoji !== '💧') {
+    if (emoji !== '💧' && emoji !== '🪱') {
       n.addEventListener('click', function() {
         n.style.transition = 'opacity .3s,transform .3s';
         n.style.opacity = '0';
         n.style.transform = 'translateX(-50%) translateY(-12px) scale(1.4)';
-        setTimeout(function(){ n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }, 350);
+        setTimeout(function(){
+          n.remove(); currentNeed = null; item._needsWater = false;
+          setFaceExpression('happy');
+          scheduleNeed();
+        }, 350);
       });
       setTimeout(function() {
         if (currentNeed === n) { n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }
       }, 30000);
     } else {
       setTimeout(function() {
-        if (currentNeed === n) { n.remove(); currentNeed = null; item._needsWater = false; scheduleNeed(); }
+        if (currentNeed === n) { setFaceExpression('cry'); }
+      }, 120000);
+      setTimeout(function() {
+        if (currentNeed === n) { n.remove(); currentNeed = null; item._needsWater = false; item._needsDirt = false; scheduleNeed(); }
       }, 3600000);
     }
   }
@@ -392,10 +697,59 @@ function startGardenLife(item) {
     setTimeout(function(){ n.remove(); currentNeed = null; item._needsWater = false; }, 400);
     var pw = item.querySelector('.garden-plant-wrap');
     if (pw) {
-      pw.style.filter = 'brightness(1.15) saturate(1.3)';
-      setTimeout(function(){ pw.style.filter = ''; }, 1500);
+      var svg = pw.querySelector('svg');
+      var isCactus = svg && svg.innerHTML.indexOf('b5c830') !== -1;
+      if (isCactus) {
+        var arms = [];
+        svg.querySelectorAll('path').forEach(function(p) {
+          var d = p.getAttribute('d') || '';
+          if ((d.indexOf('Q46') !== -1 || d.indexOf('Q114') !== -1 || d.indexOf('Q52') !== -1 || d.indexOf('Q108') !== -1) && p.getAttribute('fill') === '#3a9a30') {
+            arms.push(p);
+          }
+        });
+        arms.forEach(function(arm, i) {
+          var orig = arm.getAttribute('transform') || '';
+          var cx = i === 0 ? '68' : '92';
+          var cy = '108';
+          arm.style.transformOrigin = cx+'px '+cy+'px';
+          arm.style.transformBox = 'fill-box';
+          var frames = [0, -18, 14, -10, 6, 0];
+          var t = 0;
+          frames.forEach(function(deg, fi) {
+            setTimeout(function(){
+              arm.style.transform = 'rotate('+deg+'deg)';
+              arm.style.transition = 'transform .12s ease-in-out';
+            }, t);
+            t += 120;
+          });
+          setTimeout(function(){ arm.style.transform = ''; arm.style.transition = ''; }, t+50);
+        });
+        pw.style.filter = 'brightness(1.15) saturate(1.3)';
+        setTimeout(function(){ pw.style.filter = ''; }, 1500);
+        animateMouthHappy(svg);
+      } else {
+        pw.style.filter = 'brightness(1.15) saturate(1.3)';
+        setTimeout(function(){ pw.style.filter = ''; }, 1500);
+        setFaceExpression('happy');
+      }
     }
     needTimer = setTimeout(showNeed, 3600000);
+    addCoin(item);
+    return true;
+  };
+
+  item.satisfyDirt = function() {
+    if (!item._needsDirt || !currentNeed) return false;
+    var n = currentNeed;
+    n.style.transition = 'opacity .4s,transform .4s';
+    n.style.opacity = '0';
+    n.style.transform = 'translateX(-50%) translateY(-14px) scale(1.5)';
+    setTimeout(function(){ n.remove(); currentNeed = null; item._needsDirt = false; }, 400);
+    var pw = item.querySelector('.garden-plant-wrap');
+    if (pw) { pw.style.filter = 'brightness(1.1) hue-rotate(10deg)'; setTimeout(function(){ pw.style.filter = ''; }, 1500); }
+    setFaceExpression('happy');
+    needTimer = setTimeout(showNeed, 3600000);
+    addCoin(item);
     return true;
   };
 
@@ -403,15 +757,188 @@ function startGardenLife(item) {
     zzzTimer = setTimeout(function(){
       startSleep();
       scheduleSleep();
-    }, 300000 + Math.random()*300000);
+    }, 600000 + Math.random()*300000);
   }
 
   function scheduleNeed() {
-    needTimer = setTimeout(showNeed, 180000 + Math.random()*120000);
+    needTimer = setTimeout(showNeed, 60000);
   }
 
+  setFaceExpression('happy');
   scheduleSleep();
-  scheduleNeed();
+  scheduleNeed();}
+
+function toggleBookOpen() {
+  var cover = document.getElementById('bookCover');
+  var pL = document.getElementById('bookPageLeft');
+  var pR = document.getElementById('bookPageRight');
+  var div = document.getElementById('bookDivider');
+  var edges = document.getElementById('bookEdges');
+  var isOpen = cover.dataset.open === '1';
+  if (!isOpen) {
+    cover.style.transform = 'translateX(-9px) rotateY(-180deg)';
+    cover.dataset.open = '1';
+    pL.style.width = '200px'; pL.style.opacity = '1'; pL.style.padding = '12px 8px';
+    pR.style.width = '200px'; pR.style.opacity = '1'; pR.style.padding = '12px 8px';
+    if (div) div.style.opacity = '1';
+    if (edges) edges.style.opacity = '0';
+    var pg = document.getElementById('bookPagination');
+    if (pg) pg.style.display = 'flex';
+  } else {
+    cover.style.transform = 'translateX(-9px) rotateY(0deg)';
+    cover.dataset.open = '0';
+    pL.style.width = '0'; pL.style.opacity = '0'; pL.style.padding = '0';
+    pR.style.width = '0'; pR.style.opacity = '0'; pR.style.padding = '0';
+    if (div) div.style.opacity = '0';
+    if (edges) edges.style.opacity = '1';
+    var pg = document.getElementById('bookPagination');
+    if (pg) pg.style.display = 'none';
+  }
+}
+
+var _bookZoom = 1;
+function bookZoomIn()  { _bookZoom = Math.min(1.6, _bookZoom + 0.2); applyBookZoom(); }
+function bookZoomOut() { _bookZoom = Math.max(0.6, _bookZoom - 0.2); applyBookZoom(); }
+function applyBookZoom() {
+  var inner = document.querySelector('#book-popup > div');
+  if (inner) inner.style.transform = 'scale(' + _bookZoom + ')';
+}
+
+var EVOLVE_DATA = {
+  rose: {
+    title: 'ROSA COSMICA v2.0', subtitle: 'Nivel Galactico',
+    desc: 'Absorbe energia de cada commit.\nSus petalos irradian luz propia.\nFlorecio con mil lineas de codigo.',
+    color: '#f472b6',
+    svg: `<svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ep1" cx="35%" cy="30%"><stop offset="0%" stop-color="#ff90d0"/><stop offset="100%" stop-color="#be185d"/></radialGradient><radialGradient id="ec1" cx="35%" cy="30%"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#d97706"/></radialGradient><radialGradient id="eg1" cx="35%" cy="25%"><stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#15803d"/></radialGradient></defs><ellipse cx="80" cy="196" rx="36" ry="4" fill="#000" opacity=".2"/><path d="M52 178 L56 192 Q80 198 104 192 L108 178 Z" fill="#c1622a"/><rect x="48" y="172" width="64" height="9" rx="4" fill="#d4733a"/><ellipse cx="80" cy="172" rx="28" ry="5" fill="#2a1a0a"/><path d="M80 170 Q78 145 80 82" stroke="#15803d" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 155 Q56 142 46 124 Q62 128 80 151Z" fill="url(#eg1)"/><path d="M80 155 Q104 142 114 124 Q98 128 80 151Z" fill="url(#eg1)"/><path d="M80 132 Q58 120 50 104 Q66 108 80 128Z" fill="url(#eg1)"/><path d="M80 132 Q102 120 110 104 Q94 108 80 128Z" fill="url(#eg1)"/><ellipse cx="80" cy="22" rx="12" ry="18" fill="#9d174d" opacity=".4"/><ellipse cx="80" cy="52" rx="12" ry="18" fill="#9d174d" opacity=".4"/><ellipse cx="54" cy="37" rx="18" ry="12" fill="#9d174d" opacity=".4"/><ellipse cx="106" cy="37" rx="18" ry="12" fill="#9d174d" opacity=".4"/><ellipse cx="62" cy="20" rx="12" ry="17" fill="#9d174d" opacity=".4" transform="rotate(-40 62 20)"/><ellipse cx="98" cy="20" rx="12" ry="17" fill="#9d174d" opacity=".4" transform="rotate(40 98 20)"/><ellipse cx="62" cy="54" rx="12" ry="17" fill="#9d174d" opacity=".4" transform="rotate(40 62 54)"/><ellipse cx="98" cy="54" rx="12" ry="17" fill="#9d174d" opacity=".4" transform="rotate(-40 98 54)"/><ellipse cx="80" cy="20" rx="13" ry="19" fill="url(#ep1)"/><ellipse cx="80" cy="54" rx="13" ry="19" fill="url(#ep1)"/><ellipse cx="54" cy="37" rx="19" ry="13" fill="url(#ep1)"/><ellipse cx="106" cy="37" rx="19" ry="13" fill="url(#ep1)"/><ellipse cx="62" cy="19" rx="13" ry="18" fill="url(#ep1)" transform="rotate(-40 62 19)"/><ellipse cx="98" cy="19" rx="13" ry="18" fill="url(#ep1)" transform="rotate(40 98 19)"/><ellipse cx="62" cy="55" rx="13" ry="18" fill="url(#ep1)" transform="rotate(40 62 55)"/><ellipse cx="98" cy="55" rx="13" ry="18" fill="url(#ep1)" transform="rotate(-40 98 55)"/><circle cx="80" cy="37" r="18" fill="#d97706"/><circle cx="80" cy="37" r="15" fill="url(#ec1)"/><ellipse cx="74" cy="32" rx="4" ry="3" fill="#fde878" opacity=".6"/><circle cx="74" cy="34" r="3" fill="#1a1200"/><circle cx="86" cy="34" r="3" fill="#1a1200"/><circle cx="73" cy="33" r="1" fill="white"/><circle cx="85" cy="33" r="1" fill="white"/><path d="M74 41 Q80 47 86 41" stroke="#c04040" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M70 29 Q74 25 78 28" stroke="#3a8a20" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M82 28 Q86 25 90 29" stroke="#3a8a20" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="80" cy="37" r="22" fill="none" stroke="#f0c028" stroke-width="1.5" stroke-dasharray="4 3" opacity=".7"/><circle cx="80" cy="37" r="28" fill="none" stroke="#60c8ff" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/></svg>`
+  },
+  cactus: {
+    title: 'CACTUS MECHA v2.0', subtitle: 'Armadura de Codigo',
+    desc: 'Sus espinas son antenas 5G.\nLleva armadura dorada de commits.\nDispara semicolons al compilar.',
+    color: '#4ade80',
+    svg: `<svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="80" cy="196" rx="36" ry="4" fill="#000" opacity=".2"/><path d="M52 178 L56 192 Q80 198 104 192 L108 178 Z" fill="#c1622a"/><rect x="48" y="172" width="64" height="9" rx="4" fill="#d4733a"/><ellipse cx="80" cy="172" rx="28" ry="5" fill="#2a1a0a"/><rect x="70" y="78" width="20" height="94" rx="7" fill="#2d8a2d" stroke="#1a6a1a" stroke-width="2"/><rect x="72" y="80" width="6" height="90" rx="3" fill="#4ade80" opacity=".4"/><path d="M70 110 Q50 100 48 82 Q46 66 57 63 Q68 60 69 76" fill="#2d8a2d" stroke="#1a6a1a" stroke-width="2"/><path d="M90 100 Q110 88 112 70 Q114 54 103 52 Q92 50 91 66" fill="#2d8a2d" stroke="#1a6a1a" stroke-width="2"/><rect x="66" y="88" width="28" height="36" rx="4" fill="none" stroke="#f0c028" stroke-width="2.5" opacity=".9"/><line x1="70" y1="96" x2="90" y2="96" stroke="#60c8ff" stroke-width="2" opacity=".8"/><line x1="70" y1="104" x2="90" y2="104" stroke="#60c8ff" stroke-width="2" opacity=".8"/><line x1="70" y1="112" x2="90" y2="112" stroke="#60c8ff" stroke-width="2" opacity=".8"/><circle cx="80" cy="122" r="4" fill="#f0c028" opacity=".9"/><line x1="52" y1="68" x2="44" y2="62" stroke="#f0c028" stroke-width="2.5" stroke-linecap="round"/><line x1="50" y1="78" x2="41" y2="77" stroke="#f0c028" stroke-width="2.5" stroke-linecap="round"/><line x1="108" y1="58" x2="116" y2="52" stroke="#f0c028" stroke-width="2.5" stroke-linecap="round"/><line x1="110" y1="68" x2="119" y2="67" stroke="#f0c028" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="80" cy="100" rx="9" ry="7" fill="#f09090" opacity=".5"/><circle cx="74" cy="92" r="3.5" fill="#1a1a1a"/><circle cx="86" cy="92" r="3.5" fill="#1a1a1a"/><circle cx="73" cy="91" r="1.2" fill="white"/><circle cx="85" cy="91" r="1.2" fill="white"/><path d="M75 99 Q80 104 85 99" stroke="#c0404a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
+  },
+  daisy: {
+    title: 'SHALALA DOBLE v2.0', subtitle: 'Doble Floracion Elegante',
+    desc: 'Florecio dos veces con tu codigo.\nSus dos flores piensan en paralelo.\nLa mas elegante del jardin.',
+    color: '#f9cc30',
+    svg: `<svg width="180" height="210" viewBox="0 0 180 210" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="dp1" cx="35%" cy="30%"><stop offset="0%" stop-color="#fffef8"/><stop offset="100%" stop-color="#e8e0c8"/></radialGradient><radialGradient id="dc1" cx="35%" cy="30%"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#c87800"/></radialGradient><radialGradient id="dg1" cx="35%" cy="25%"><stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#15803d"/></radialGradient></defs><ellipse cx="90" cy="206" rx="38" ry="4" fill="#000" opacity=".2"/><path d="M62 188 L66 202 Q90 208 114 202 L118 188 Z" fill="#c1622a"/><rect x="58" y="182" width="64" height="9" rx="4" fill="#d4733a"/><ellipse cx="90" cy="182" rx="30" ry="5" fill="#2a1a0a"/><path d="M90 180 Q88 155 90 105" stroke="#2d8a2d" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M90 165 Q66 152 56 134 Q72 138 90 161Z" fill="url(#dg1)"/><path d="M90 165 Q114 152 124 134 Q108 138 90 161Z" fill="url(#dg1)"/><path d="M90 142 Q68 130 60 114 Q76 118 90 138Z" fill="url(#dg1)"/><path d="M90 142 Q112 130 120 114 Q104 118 90 138Z" fill="url(#dg1)"/><path d="M90 105 Q65 97 58 80" stroke="#2d8a2d" stroke-width="3" fill="none" stroke-linecap="round"/><g transform="translate(55,72)"><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(0)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(40)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(80)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(120)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(160)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(200)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(240)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(280)"/><ellipse cx="0" cy="-14" rx="4" ry="12" fill="url(#dp1)" stroke="#d8cfc0" stroke-width=".7" transform="rotate(320)"/><circle cx="0" cy="0" r="11" fill="#c87800" stroke="#9a5800" stroke-width="1"/><circle cx="0" cy="0" r="9" fill="url(#dc1)"/><circle cx="-3" cy="-2" r="2.2" fill="#1a1200"/><circle cx="3" cy="-2" r="2.2" fill="#1a1200"/><circle cx="-3.5" cy="-2.5" r=".8" fill="white"/><circle cx="2.5" cy="-2.5" r=".8" fill="white"/><path d="M-3 3 Q0 6 3 3" stroke="#c04040" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M-6 -6 Q-4 -9 -1 -7" stroke="#3a8a20" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M6 -6 Q4 -9 1 -7" stroke="#3a8a20" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(90,88)"><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(0)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(36)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(72)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(108)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(144)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(180)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(216)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(252)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(288)"/><ellipse cx="0" cy="-20" rx="6" ry="19" fill="url(#dp1)" stroke="#d8cfc0" stroke-width="1" transform="rotate(324)"/><circle cx="0" cy="0" r="17" fill="#c87800" stroke="#9a5800" stroke-width="1.5"/><circle cx="0" cy="0" r="14" fill="url(#dc1)"/><ellipse cx="-5" cy="-4" rx="5" ry="3.5" fill="#fde878" opacity=".5"/><circle cx="-5" cy="-2" r="3.5" fill="#1a1200"/><circle cx="5" cy="-2" r="3.5" fill="#1a1200"/><circle cx="-6" cy="-3" r="1.3" fill="white"/><circle cx="4" cy="-3" r="1.3" fill="white"/><path d="M-5 5 Q0 10 5 5" stroke="#c04040" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M-8 -7 Q-5 -12 -1 -8" stroke="#3a8a20" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M8 -7 Q5 -12 1 -8" stroke="#3a8a20" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="-11" cy="4" rx="4.5" ry="2.5" fill="#f09090" opacity=".5"/><ellipse cx="11" cy="4" rx="4.5" ry="2.5" fill="#f09090" opacity=".5"/></g></svg>`
+  },
+  alien: {
+    title: 'FLORA NEXUS v2.0', subtitle: 'Forma Cuantica',
+    desc: 'Existe en multiples repos a la vez.\nSus antenas reciben pull requests.\nTeleporta seeds entre branches.',
+    color: '#76D178',
+    svg: `<svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"><ellipse cx="80" cy="196" rx="36" ry="4" fill="#000" opacity=".2"/><path d="M52 178 L56 192 Q80 198 104 192 L108 178 Z" fill="#c1622a"/><rect x="48" y="172" width="64" height="9" rx="4" fill="#d4733a"/><ellipse cx="80" cy="172" rx="28" ry="5" fill="#2a1a0a"/><path d="M80 170 Q78 148 80 100" stroke="#2d8a2d" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M80 152 Q58 144 53 130 Q66 134 80 148Z" fill="#2d8a2d"/><path d="M80 152 Q102 144 107 130 Q94 134 80 148Z" fill="#2d8a2d"/><path d="M80 100 Q54 92 48 76 Q60 84 80 97Z" fill="#fde047"/><path d="M80 100 Q106 92 112 76 Q100 84 80 97Z" fill="#fde047"/><ellipse cx="80" cy="88" rx="24" ry="18" fill="#99E99B" stroke="#2d8a2d" stroke-width="2.5"/><ellipse cx="80" cy="85" rx="18" ry="12" fill="#bbf7d0" opacity=".5"/><line x1="68" y1="72" x2="68" y2="50" stroke="#2d8a2d" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="72" x2="92" y2="50" stroke="#2d8a2d" stroke-width="3" stroke-linecap="round"/><circle cx="68" cy="46" r="9" fill="#f0f0f0" stroke="#333" stroke-width="1.5"/><circle cx="68" cy="46" r="6" fill="#1a1a1a"/><circle cx="66" cy="44" r="2" fill="white"/><circle cx="92" cy="46" r="9" fill="#f0f0f0" stroke="#333" stroke-width="1.5"/><circle cx="92" cy="46" r="6" fill="#1a1a1a"/><circle cx="90" cy="44" r="2" fill="white"/><circle cx="68" cy="36" r="5" fill="#f0c028" stroke="#c09018" stroke-width="1"/><circle cx="92" cy="36" r="5" fill="#f0c028" stroke="#c09018" stroke-width="1"/><ellipse cx="72" cy="94" rx="5" ry="3" fill="#f09090" opacity=".6"/><ellipse cx="88" cy="94" rx="5" ry="3" fill="#f09090" opacity=".6"/><path d="M72 100 Q80 108 88 100 Q88 105 80 107 Q72 105 72 100Z" fill="#E95A79" stroke="#333" stroke-width="1"/><path d="M75 101 Q80 105 85 101 Q85 103 80 104 Q75 103 75 101Z" fill="white" opacity=".9"/><circle cx="80" cy="88" r="26" fill="none" stroke="#76D178" stroke-width="1.5" stroke-dasharray="4 3" opacity=".7"/><circle cx="80" cy="88" r="32" fill="none" stroke="#f0c028" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/></svg>`
+  }
+};
+
+function showEvolve(type, plantSvgHtml) {
+  var data = EVOLVE_DATA[type] || EVOLVE_DATA.rose;
+  document.getElementById('evolve-title').textContent = data.title;
+  document.getElementById('evolve-subtitle').textContent = data.subtitle;
+  document.getElementById('evolve-desc').textContent = data.desc;
+  var plantDiv = document.getElementById('evolve-plant');
+  plantDiv.innerHTML = '<div style="filter:drop-shadow(0 0 20px '+data.color+') drop-shadow(0 0 10px '+data.color+');">'+data.svg+'</div>';
+  document.getElementById('evolve-overlay').style.display = 'flex';
+}
+
+function bookZoomIn()  { _bookZoom = Math.min(1.6, _bookZoom + 0.2); applyBookZoom(); }
+function bookZoomOut() { _bookZoom = Math.max(0.6, _bookZoom - 0.2); applyBookZoom(); }
+function applyBookZoom() {
+  var inner = document.querySelector('#book-popup > div');
+  if (inner) inner.style.transform = 'scale(' + _bookZoom + ')';
+}
+
+function renderBookPage() {
+  var pL = document.getElementById('bookPlantsLeft');
+  var pR = document.getElementById('bookPlantsRight');
+  var pageNum = document.getElementById('bookPageNum');
+  pL.innerHTML = ''; pR.innerHTML = '';
+  var emojis = ['🌸','🌵','🌼','👽','🌹','🌻'];
+
+  var PLANT_INFO = {
+    rose:   { name: 'Rosa Galáctica',   desc: 'Nació con tu primer commit.\nCrece cada vez que escribes código.\nSus pétalos rosados brillan más\ncuando el proyecto avanza.', color: '#c04090' },
+    cactus: { name: 'Cactus Kawaii',    desc: 'Resistente como el código legacy.\nCada espina es una línea guardada.\nSonríe aunque el build falle.\nNunca necesita refactor.', color: '#2a7a22' },
+    daisy:  { name: 'Shalala',          desc: 'Florece al ritmo de tus funciones.\nSus pétalos blancos son puros\ncomo el código bien documentado.\nSiempre sonríe al compilar.', color: '#c87800' },
+    alien:  { name: 'Flora Alienígena', desc: 'Llegó de otro repositorio.\nSus antenas detectan errores\nantes de que aparezcan.\nEvolucionó con cada merge.', color: '#3a8a3a' }
+  };
+
+  function detectPlantType(pw) {
+    var html = pw.innerHTML;
+    if (html.indexOf('b5c830') !== -1 || html.indexOf('3a9a30') !== -1) return 'cactus';
+    if (html.indexOf('76D178') !== -1 || html.indexOf('99E99B') !== -1) return 'alien';
+    if (html.indexOf('6a9a40') !== -1 || html.indexOf('f5b800') !== -1) return 'daisy';
+    return 'rose';
+  }
+
+  function makePlantEl(plant, idx) {
+    var pw = plant.querySelector('.garden-plant-wrap');
+    if (!pw) return null;
+    var type = detectPlantType(pw);
+    var info = PLANT_INFO[type] || PLANT_INFO.rose;
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'width:90px;height:120px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2));flex-shrink:0;';
+    wrap.innerHTML = pw.innerHTML.replace(/width="75" height="100"/g,'width="90" height="120"');
+    var name = document.createElement('div');
+    name.style.cssText = 'font-size:8px;font-weight:bold;color:'+info.color+';font-family:\'Courier New\',monospace;text-align:center;margin-top:4px;';
+    name.textContent = info.name;
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:7px;color:#8a6020;font-family:\'Courier New\',monospace;text-align:center;margin-top:3px;line-height:1.5;white-space:pre-line;';
+    desc.textContent = info.desc;
+    var btn = document.createElement('button');
+    btn.textContent = 'Evolucionar';
+    btn.style.cssText = 'margin-top:6px;padding:3px 10px;background:'+info.color+';color:#fff;border:none;border-radius:8px;font-size:7px;font-family:\'Courier New\',monospace;cursor:pointer;opacity:0.85;';
+    btn.onclick = function(){ showEvolve(type, wrap.innerHTML); };
+    var col = document.createElement('div');
+    col.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6px;';
+    col.appendChild(name); col.appendChild(wrap); col.appendChild(desc); col.appendChild(btn);    return col;
+  }
+
+  var leftIdx  = _bookPage * 2;
+  var rightIdx = _bookPage * 2 + 1;
+  if (_bookPlants[leftIdx])  { var el = makePlantEl(_bookPlants[leftIdx],  leftIdx);  if (el) pL.appendChild(el); }
+  if (_bookPlants[rightIdx]) { var el = makePlantEl(_bookPlants[rightIdx], rightIdx); if (el) pR.appendChild(el); }
+  if (!_bookPlants.length) {
+    pL.innerHTML = '<div style="font-size:9px;color:#8a6020;font-family:\'Courier New\',monospace;text-align:center;padding:20px 8px;">Aún no hay plantas</div>';
+  }
+  var totalPages = Math.ceil(_bookPlants.length / 2) || 1;
+  if (pageNum) pageNum.textContent = (_bookPage + 1) + '/' + totalPages;
+  document.getElementById('bookPrev').style.opacity = _bookPage > 0 ? '1' : '0.3';
+  document.getElementById('bookNext').style.opacity = (_bookPage + 1) < totalPages ? '1' : '0.3';
+}
+
+function bookPrevPage() { if (_bookPage > 0) { _bookPage--; renderBookPage(); } }
+function bookNextPage() { if ((_bookPage + 1) * 2 < _bookPlants.length) { _bookPage++; renderBookPage(); } }
+
+function openBookPopup() {
+  var popup = document.getElementById('book-popup');
+  if (!popup) return;
+  var slots = document.getElementById('garden-slots');
+  _bookPlants = slots ? Array.from(slots.querySelectorAll('.garden-plant')) : [];
+  _bookPage = 0;
+  var total = document.getElementById('book-total');
+  if (total) total.textContent = gardenState.totalCompleted || 0;
+  var cover = document.getElementById('bookCover');
+  if (cover) { cover.style.transform = 'translateX(-9px) rotateY(0deg)'; cover.dataset.open = '0'; }
+  var pLEl = document.getElementById('bookPageLeft');
+  var pREl = document.getElementById('bookPageRight');
+  if (pLEl) { pLEl.style.width='0'; pLEl.style.opacity='0'; pLEl.style.padding='0'; }
+  if (pREl) { pREl.style.width='0'; pREl.style.opacity='0'; pREl.style.padding='0'; }
+  var div = document.getElementById('bookDivider');
+  if (div) div.style.opacity = '0';
+  renderBookPage();
+  popup.style.display = 'flex';
+  ['btn-cactus','btn-daisy','btn-alien'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.style.visibility = 'hidden';
+  });
+}
+
+function closeBookPopup() {
+  var popup = document.getElementById('book-popup');
+  if (!popup) return;
+  popup.style.display = 'none';
+  ['btn-cactus','btn-daisy','btn-alien'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.style.visibility = '';
+  });
 }
 
 function updateDayNight() {
@@ -427,14 +954,16 @@ function buildStars() {
 function renderPlant(stage, mood) {
   const wrap = document.getElementById('plant-wrap');
   if (gardenState._boxPlant === 'daisy') {
-    wrap.innerHTML = buildDaisySVG(stage);
+    wrap.innerHTML = buildDaisySVG(stage, getFlowerFace(mood));
     wrap.style.filter = `drop-shadow(0 0 16px #f5b800)`;
   } else if (gardenState._boxPlant === 'alien') {
-    wrap.innerHTML = buildAlienSVG(stage);
+    wrap.innerHTML = buildAlienSVG(stage, mood);
     wrap.style.filter = `drop-shadow(0 0 16px #76D178)`;
+    startAlienBlink();
   } else if (gardenState._boxOpened) {
-    wrap.innerHTML = buildKawaiiCactus(stage);
+    wrap.innerHTML = buildKawaiiCactus(stage, getFlowerFace(mood));
     wrap.style.filter = `drop-shadow(0 0 16px #4a9a2a)`;
+    startCactusBlink();
   } else {
     const face = stage === 0 ? getSeedFace(mood) : getFlowerFace(mood);
     wrap.innerHTML = buildRoseSVG(stage, face);
@@ -449,14 +978,16 @@ function setMood(mood, duration) {
   currentMood = mood;
   const wrap = document.getElementById('plant-wrap');
   if (gardenState._boxPlant === 'daisy') {
-    wrap.innerHTML = buildDaisySVG(currentStage);
+    wrap.innerHTML = buildDaisySVG(currentStage, getFlowerFace(mood));
     wrap.style.filter = `drop-shadow(0 0 16px #f5b800)`;
   } else if (gardenState._boxPlant === 'alien') {
-    wrap.innerHTML = buildAlienSVG(currentStage);
+    wrap.innerHTML = buildAlienSVG(currentStage, mood);
     wrap.style.filter = `drop-shadow(0 0 16px #76D178)`;
+    startAlienBlink();
   } else if (gardenState._boxOpened) {
-    wrap.innerHTML = buildKawaiiCactus(currentStage);
+    wrap.innerHTML = buildKawaiiCactus(currentStage, getFlowerFace(mood));
     wrap.style.filter = `drop-shadow(0 0 16px #4a9a2a)`;
+    startCactusBlink();
   } else {
     const face = currentStage === 0 ? getSeedFace(mood) : getFlowerFace(mood);
     wrap.innerHTML = buildRoseSVG(currentStage < 0 ? 0 : currentStage, face);
@@ -466,7 +997,24 @@ function setMood(mood, duration) {
   if (mood==='sleep') { wrap.classList.add('anim-sleep'); startZzz(); }
   else {
     stopZzz(); wrap.classList.add('anim-breathe');
-    if (mood==='watered') setTimeout(()=>{ const f=document.getElementById('plant-face'); if(f){f.classList.add('face-watered');setTimeout(()=>f.classList.remove('face-watered'),950);} },50);
+    if (mood==='watered') setTimeout(()=>{
+      const f=document.getElementById('plant-face');
+      if(!f) return;
+      if(gardenState._boxPlant === 'daisy') {
+        f.style.transition='transform .15s';
+        const seq=[
+          'translate(0,47px) rotate(-8deg) scale(1.05)',
+          'translate(0,47px) rotate(7deg) scale(1.05)',
+          'translate(0,47px) rotate(-4deg) scale(1.02)',
+          'translate(0,47px) rotate(0deg) scale(1)'
+        ];
+        let t=0;
+        seq.forEach(function(v){ setTimeout(function(){ f.style.transform=v; },t); t+=200; });
+      } else if(!gardenState._boxOpened) {
+        f.classList.add('face-watered');
+        setTimeout(()=>f.classList.remove('face-watered'),950);
+      }
+    },50);
   }
   if (duration) { clearTimeout(sleepTimer); sleepTimer=setTimeout(()=>{ if(currentMood===mood) setMood('idle'); },duration); }
 }
@@ -512,7 +1060,8 @@ function waterPlant() {
 function spawnParticles(stage) {
   const c=document.getElementById('particles'); c.innerHTML='';
   const count=[0,2,3,5,9][stage];
-  for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const sz=2+Math.random()*3;p.style.cssText=`width:${sz}px;height:${sz}px;background:${STAGE_COLORS[stage]};left:${25+Math.random()*50}%;bottom:${20+Math.random()*55}%;animation-delay:${Math.random()*4}s;animation-duration:${2.5+Math.random()*2}s;`;c.appendChild(p);}
+  const color = gardenState._boxPlant === 'alien' ? '#76D178' : STAGE_COLORS[stage];
+  for(let i=0;i<count;i++){const p=document.createElement('div');p.className='particle';const sz=2+Math.random()*3;p.style.cssText=`width:${sz}px;height:${sz}px;background:${color};left:${25+Math.random()*50}%;bottom:${20+Math.random()*55}%;animation-delay:${Math.random()*4}s;animation-duration:${2.5+Math.random()*2}s;`;c.appendChild(p);}
 }
 function showToast(msg) {
   const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
@@ -538,20 +1087,6 @@ function updatePlant(data) {
     renderPlant(stage, currentMood);
     if (stage===4) {
       setMood('love',5000);
-      if (!firstLoad && !gardenState._autoCollected) {
-        gardenState._autoCollected = true;
-        saveGarden();
-        setTimeout(function() {
-          var wrap = document.getElementById('plant-wrap');
-          var gardenRow = document.getElementById('garden-row');
-          var item = document.createElement('div'); item.className = 'garden-plant';
-          var pw = document.createElement('div'); pw.className = 'garden-plant-wrap';
-          pw.innerHTML = wrap.innerHTML.replace('width="160" height="215"','width="75" height="100"');
-          var lbl = document.createElement('div'); lbl.className = 'garden-plant-label'; lbl.textContent = '🌸';
-          item.appendChild(pw); item.appendChild(lbl); gardenRow.appendChild(item);
-          startGardenLife(item);
-        }, 1500);
-      }
     } else if (firstLoad) setMood('sleep');
     if (stage < 4) gardenState._autoCollected = false;
     if (firstLoad) startSleepCycle();
@@ -560,6 +1095,8 @@ function updatePlant(data) {
   document.documentElement.style.setProperty('--sc', STAGE_COLORS[stage]);
   document.documentElement.style.setProperty('--bs', BAR_STARTS[stage]);
   document.documentElement.style.setProperty('--be', BAR_ENDS[stage]);
+  var boxDisplay = stage === 4 ? 'block' : 'none';
+  ['btn-cactus','btn-daisy','btn-alien'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display=boxDisplay; });
   document.getElementById('stage-name').textContent = STAGE_NAMES[stage];
   document.getElementById('stage-name').style.color = STAGE_COLORS[stage];
   document.getElementById('points').textContent = lines;
@@ -589,95 +1126,108 @@ updateDayNight(); setInterval(updateDayNight,60000);
 })();
 vscode.postMessage({type:'ready'});
 
-(function setupWateringCan() {
-  var can = document.createElement('div');
-  can.id = 'watering-can';
-  can.textContent = '🪣';
-  can.style.cssText = 'position:fixed;font-size:28px;cursor:grab;z-index:99990;user-select:none;transition:transform .15s;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));';
-  document.body.appendChild(can);
+(function setupTools() {
+  var can = document.getElementById('watering-can');
+  var bag = document.getElementById('dirt-bag');
 
-  function placeCanAbovePlant() {
-    var badge = document.getElementById('streak-badge');
-    if (!badge) return;
-    var r = badge.getBoundingClientRect();
-    can.style.left = (r.right + 10) + 'px';
-    can.style.top  = (r.top + r.height/2 - 14) + 'px';
+  function resetPos(el) {
+    var gardenRow = document.getElementById('garden-row');
+    if (gardenRow && el.parentNode !== gardenRow) gardenRow.appendChild(el);
+    el.style.position = 'absolute';
+    el.style.left   = el.dataset.origLeft   || '';
+    el.style.top    = el.dataset.origTop    || '';
+    el.style.bottom = el.dataset.origBottom || '';
+    el.style.transform = '';
+    el.style.cursor = 'grab';
+    el.style.zIndex = '8';
   }
-  placeCanAbovePlant();
 
-  var dragging = false, ox = 0, oy = 0;
+  function saveOrigPos(el) {
+    el.dataset.origLeft   = el.style.left;
+    el.dataset.origTop    = el.style.top;
+    el.dataset.origBottom = el.style.bottom;
+  }
 
-  can.addEventListener('mousedown', function(e) {
-    dragging = true;
-    ox = e.clientX - can.getBoundingClientRect().left;
-    oy = e.clientY - can.getBoundingClientRect().top;
-    can.style.cursor = 'grabbing';
-    can.style.transform = 'scale(1.2) rotate(-20deg)';
-    e.preventDefault();
-  });
+  saveOrigPos(can);
+  saveOrigPos(bag);
 
-  document.addEventListener('mousemove', function(e) {
-    if (!dragging) return;
-    can.style.left = (e.clientX - ox) + 'px';
-    can.style.top  = (e.clientY - oy) + 'px';
-  });
-
-  document.addEventListener('mouseup', function(e) {
-    if (!dragging) return;
-    dragging = false;
-    can.style.cursor = 'grab';
-    can.style.transform = '';
-    var cr = can.getBoundingClientRect();
-    var canCX = cr.left + cr.width/2;
-    var canCY = cr.top  + cr.height/2;
-    var watered = false;
-    document.querySelectorAll('.garden-plant').forEach(function(plant) {
-      var pr = plant.getBoundingClientRect();
-      if (canCX >= pr.left && canCX <= pr.right && canCY >= pr.top && canCY <= pr.bottom) {
-        if (plant.satisfyWater && plant.satisfyWater()) {
-          watered = true;
-          var drops = document.createElement('div');
-          drops.style.cssText = 'position:fixed;left:'+(pr.left+pr.width/2-10)+'px;top:'+(pr.top-10)+'px;font-size:18px;pointer-events:none;z-index:99991;animation:floatScore 1s ease-out forwards;';
-          drops.textContent = '💦';
-          document.body.appendChild(drops);
-          setTimeout(function(){ drops.remove(); }, 1000);
+  function makeDraggable(el, onDrop) {
+    var dragging = false, ox = 0, oy = 0;
+    el.addEventListener('mousedown', function(e) {
+      dragging = true;
+      var r = el.getBoundingClientRect();
+      ox = e.clientX - r.left;
+      oy = e.clientY - r.top;
+      document.body.appendChild(el);
+      el.style.position = 'fixed';
+      el.style.left = r.left + 'px';
+      el.style.top  = r.top  + 'px';
+      el.style.bottom = '';
+      el.style.cursor = 'grabbing';
+      el.style.transform = 'scale(1.15) rotate(-15deg)';
+      el.style.zIndex = '99999';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      el.style.left = (e.clientX - ox) + 'px';
+      el.style.top  = (e.clientY - oy) + 'px';
+    });
+    document.addEventListener('mouseup', function() {
+      if (!dragging) return;
+      dragging = false;
+      var cr = el.getBoundingClientRect();
+      var cx = cr.left + cr.width/2, cy = cr.top + cr.height/2;
+      document.querySelectorAll('.garden-plant').forEach(function(plant) {
+        var pr = plant.getBoundingClientRect();
+        if (cx >= pr.left && cx <= pr.right && cy >= pr.top && cy <= pr.bottom) {
+          var ok = onDrop(plant);
+          if (ok) {
+            var fx = document.createElement('div');
+            fx.style.cssText = 'position:fixed;left:'+(pr.left+pr.width/2-10)+'px;top:'+(pr.top-10)+'px;font-size:20px;pointer-events:none;z-index:99991;animation:floatScore 1s ease-out forwards;';
+            fx.textContent = el === can ? '💦' : '✨';
+            document.body.appendChild(fx);
+            setTimeout(function(){ fx.remove(); }, 1000);
+          }
         }
-      }
+      });
+      resetPos(el);
     });
-    setTimeout(placeCanAbovePlant, 400);
-  });
-
-  can.addEventListener('touchstart', function(e) {
-    dragging = true;
-    var t = e.touches[0];
-    ox = t.clientX - can.getBoundingClientRect().left;
-    oy = t.clientY - can.getBoundingClientRect().top;
-    can.style.transform = 'scale(1.2) rotate(-20deg)';
-    e.preventDefault();
-  }, {passive:false});
-
-  document.addEventListener('touchmove', function(e) {
-    if (!dragging) return;
-    var t = e.touches[0];
-    can.style.left = (t.clientX - ox) + 'px';
-    can.style.top  = (t.clientY - oy) + 'px';
-  }, {passive:false});
-
-  document.addEventListener('touchend', function(e) {
-    if (!dragging) return;
-    dragging = false;
-    can.style.transform = '';
-    var cr = can.getBoundingClientRect();
-    var canCX = cr.left + cr.width/2;
-    var canCY = cr.top  + cr.height/2;
-    document.querySelectorAll('.garden-plant').forEach(function(plant) {
-      var pr = plant.getBoundingClientRect();
-      if (canCX >= pr.left && canCX <= pr.right && canCY >= pr.top && canCY <= pr.bottom) {
-        if (plant.satisfyWater) plant.satisfyWater();
-      }
+    el.addEventListener('touchstart', function(e) {
+      dragging = true;
+      var r = el.getBoundingClientRect();
+      var t = e.touches[0];
+      ox = t.clientX - r.left;
+      oy = t.clientY - r.top;
+      el.style.position = 'fixed';
+      el.style.left = r.left + 'px';
+      el.style.top  = r.top  + 'px';
+      el.style.bottom = '';
+      el.style.transform = 'scale(1.15) rotate(-15deg)';
+      el.style.zIndex = '99999';
+      e.preventDefault();
+    }, {passive:false});
+    document.addEventListener('touchmove', function(e) {
+      if (!dragging) return;
+      var t = e.touches[0];
+      el.style.left = (t.clientX - ox) + 'px';
+      el.style.top  = (t.clientY - oy) + 'px';
+    }, {passive:false});
+    document.addEventListener('touchend', function() {
+      if (!dragging) return;
+      dragging = false;
+      var cr = el.getBoundingClientRect();
+      var cx = cr.left + cr.width/2, cy = cr.top + cr.height/2;
+      document.querySelectorAll('.garden-plant').forEach(function(plant) {
+        var pr = plant.getBoundingClientRect();
+        if (cx >= pr.left && cx <= pr.right && cy >= pr.top && cy <= pr.bottom) onDrop(plant);
+      });
+      resetPos(el);
     });
-    setTimeout(placeCanAbovePlant, 400);
-  });
+  }
+
+  makeDraggable(can, function(plant) { return plant.satisfyWater && plant.satisfyWater(); });
+  makeDraggable(bag, function(plant) { return plant.satisfyDirt  && plant.satisfyDirt();  });
 })();
 window.addEventListener('message', e=>{
   const msg=e.data;
