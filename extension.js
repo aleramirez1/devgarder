@@ -4,10 +4,45 @@ const StorageService = require('./src/services/StorageService');
 const ActivityService = require('./src/services/ActivityService');
 const PlantController = require('./src/controllers/PlantController');
 const PlantViewProvider = require('./src/views/PlantViewProvider');
+const AuthService = require('./src/services/AuthService');
+const AuthViewProvider = require('./src/views/AuthViewProvider');
+const SettingsViewProvider = require('./src/views/SettingsViewProvider');
 
 function activate(context) {
     console.log('CODE GARDEN ACTIVADO');
 
+    const authService = new AuthService(context);
+
+    // Verificar autenticación antes de activar la extensión
+    checkAuthAndActivate(context, authService);
+}
+
+async function checkAuthAndActivate(context, authService) {
+    try {
+        const isAuth = await authService.isAuthenticated();
+
+        if (!isAuth) {
+            const authView = new AuthViewProvider(context, authService, () => {
+                vscode.window.showInformationMessage('🌿 ¡Bienvenido a Code Garden!');
+                activateExtension(context, authService);
+            });
+            authView.show();
+            return;
+        }
+
+        activateExtension(context, authService);
+    } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        // Si algo falla, mostrar login en lugar de quedarse colgado
+        const authView = new AuthViewProvider(context, authService, () => {
+            vscode.window.showInformationMessage('🌿 ¡Bienvenido a Code Garden!');
+            activateExtension(context, authService);
+        });
+        authView.show();
+    }
+}
+
+function activateExtension(context, authService) {
     const plantModel = new PlantModel();
     const storageService = new StorageService(context);
     const controller = new PlantController(plantModel, storageService);
@@ -30,6 +65,12 @@ function activate(context) {
     context.subscriptions.push(viewProvider);
 
     let disposable = vscode.commands.registerCommand('code-garden.showPlant', function () {
+        // Comando de configuración
+    const settingsCommand = vscode.commands.registerCommand('code-garden.settings', () => {
+        const settings = new SettingsViewProvider(context, authService);
+        settings.show();
+    });
+    context.subscriptions.push(settingsCommand);
         vscode.window.showInformationMessage(`🌱 Etapa ${plantModel.stage} - ${Math.floor(plantModel.growth)} puntos`);
     });
 
@@ -89,7 +130,4 @@ function activate(context) {
 
 function deactivate() {}
 
-module.exports = {
-    activate,
-    deactivate
-};
+module.exports = { activate, deactivate };

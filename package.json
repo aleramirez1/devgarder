@@ -18,6 +18,10 @@
       {
         "command": "code-garden.showPlant",
         "title": "🌿 Ver mi Planta"
+      },
+      {
+        "command": "code-garden.settings",
+        "title": "🌿 Code Garden — Configuración y Suscripción"
       }
     ],
     "viewsContainers": {
